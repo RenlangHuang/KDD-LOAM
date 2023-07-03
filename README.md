@@ -5,6 +5,7 @@ KDD-LOAM: Jointly Learned Keypoint Detector and Descriptors Assisted LiDAR Odome
 ## 1. Prerequisites
 ### 1.1 **Ubuntu** and **ROS**
 Ubuntu 64-bit 16.04 or 18.04 or 20.04 (tested).
+
 ROS Kinetic or Melodic or Noetic (tested). [ROS Installation](http://wiki.ros.org/ROS/Installation)
 
 ### 1.2. **Ceres Solver**
@@ -16,6 +17,7 @@ Follow [PCL Installation](http://www.pointclouds.org/downloads/linux.html).
 
 ### 1.4. **Python** and **CUDA**, **CUDNN**
 Python 3 (Python 3.7 is tested, conda is recommended).
+
 requirements (pip installation): numpy, scipy, torch, torchvision, nibabel, open3d, rospy
 
 ## 2. Build KDD-LOAM

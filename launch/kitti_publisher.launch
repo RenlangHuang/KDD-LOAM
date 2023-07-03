@@ -1,0 +1,13 @@
+<launch>
+    
+
+    <node name="kittiPublisher" pkg="aloam_velodyne" type="kittiPublisher" output="screen"> 
+        <param name="dataset_folder" type="string" value="/media/jacko/SSD/KITTI_data_odometry/" />
+        <param name="sequence_number" type="string" value="00" />
+        <param name="to_bag" type="bool" value="false" />
+        <param name="output_bag_file" type="string" value="~/3dfeataloam_ws/kitti.bag" />
+        <param name="publish_delay" type="double" value="0.1"/>
+        <param name="maximum_range" type="double" value="70.0"/>
+        <param name="minimum_range" type="double" value="2.5"/>
+    </node>
+</launch>

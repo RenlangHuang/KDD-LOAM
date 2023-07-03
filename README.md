@@ -22,21 +22,24 @@ requirements (pip installation): numpy, scipy, torch, torchvision, nibabel, open
 Clone the repository and catkin_make:
 
 ```
+    mkdir -p ~/catkin_ws/src
     cd ~/catkin_ws/src
     git clone https://github.com/NeSC-IV/KDD-LOAM.git
     cd ../
     catkin_make
     source ~/catkin_ws/devel/setup.bash
-    cd ~/catkin_ws/scripts
+    cd ~/catkin_ws/scripts/cpp_extensions
     sh compile_wrappers.sh
 ```
 
 ## 3. KITTI Example (Velodyne HDL-64)
-Download [KITTI Odometry dataset](http://www.cvlibs.net/datasets/kitti/eval_odometry.php) to YOUR_DATASET_FOLDER and set the `dataset_folder` and `sequence_number` parameters in `kitti_helper.launch` file. Note you also convert KITTI dataset to bag file for easy use by setting proper parameters in `kitti_helper.launch`. 
+Download [KITTI Odometry dataset](http://www.cvlibs.net/datasets/kitti/eval_odometry.php) to YOUR_DATASET_FOLDER and set the `dataset_folder` and `sequence_number` parameters in `kitti_publisher.launch` file. Note you also convert KITTI dataset to bag file for easy use by setting proper parameters in `kitti_helper.launch`. 
 
 ```
-    roslaunch aloam_velodyne aloam_velodyne_HDL_64.launch
-    roslaunch aloam_velodyne kitti_helper.launch
+    cd ~/catkin_ws/src/scripts
+    python keypointsDescription.py
+    roslaunch aloam_velodyne kddloam_velodyne_HDL_64.launch
+    roslaunch aloam_velodyne kitti_publisher.launch
 ```
 
 ## 4.Acknowledgements

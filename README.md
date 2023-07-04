@@ -37,6 +37,14 @@ Clone the repository and catkin_make:
 ## 3. KITTI Example (Velodyne HDL-64)
 Download [KITTI Odometry dataset](http://www.cvlibs.net/datasets/kitti/eval_odometry.php) to YOUR_DATASET_FOLDER and set the `dataset_folder` and `sequence_number` parameters in `kitti_publisher.launch` file. Note you also convert KITTI dataset to bag file for easy use by setting proper parameters in `kitti_helper.launch`. 
 
+python version (tested):
+```
+    cd ~/catkin_ws/src/scripts
+    python keypointsDescription.py
+    python odometry.py
+    roslaunch aloam_velodyne kitti_publisher.launch
+```
+C++ version (with bugs):
 ```
     cd ~/catkin_ws/src/scripts
     python keypointsDescription.py

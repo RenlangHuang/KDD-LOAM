@@ -40,8 +40,9 @@ Download [KITTI Odometry dataset](http://www.cvlibs.net/datasets/kitti/eval_odom
 python version (tested):
 ```
     cd ~/catkin_ws/src/scripts
-    python keypointsDescription.py
-    python odometry.py
+    python keypointsDescription.py --num_keypoints 4500
+    python odometry.py --multi_threads_mode True
+    python mapping.py
     roslaunch aloam_velodyne kitti_publisher.launch
 ```
 C++ version (with bugs):

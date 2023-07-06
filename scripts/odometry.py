@@ -1,5 +1,6 @@
 import time
 import rospy
+import argparse
 import threading
 import numpy as np
 import open3d as o3d
@@ -12,9 +13,14 @@ from geometry_msgs.msg import PoseStamped
 from scipy.spatial.transform import Rotation as R
 
 
+paser = argparse.ArgumentParser()
+paser.add_argument("--multi_threads_mode", type=bool, default=False)
+args = paser.parse_args()
+
+
 fields = ['x','y','z','intensity','saliency','descriptor']
 keypointsBuf: List[List[PointCloud2]] = list()
-allpointsBuf: List[PointCloud2] = list()
+allpointsBuf: List[List[PointCloud2]] = list()
 mBuf = threading.Lock()
 
 params = {
@@ -42,20 +48,35 @@ pubKeypointsMsg = deepcopy(pubmsg)
 
 
 def laserCloudHandler(data:PointCloud2):
-    print(rospy.Time.to_sec(data.header.stamp))
-    mBuf.acquire()
-    allpointsBuf.append(data)
-    mBuf.release()
+
+    def laserCloudHandlerThread(data:PointCloud2):
+        pcd = point_cloud2.read_points(data, field_names=fields)
+        pcd = np.array(list(pcd), dtype=np.float32)
+        print(rospy.Time.to_sec(data.header.stamp), pcd.shape)
+
+        mBuf.acquire()
+        allpointsBuf.append([data, pcd])
+        mBuf.release()
+    
+    if args.multi_threads_mode:
+        threading.Thread(target=laserCloudHandlerThread, args=[data]).start()
+    else: laserCloudHandlerThread(data)
 
 
 def keypointsCloudHandler(data:PointCloud2):
-    pcd = point_cloud2.read_points(data, field_names=fields)
-    pcd = np.array(list(pcd), dtype=np.float32)
-    print(rospy.Time.to_sec(data.header.stamp), pcd.shape)
 
-    mBuf.acquire()
-    keypointsBuf.append([data, pcd])
-    mBuf.release()
+    def keypointsCloudHandlerThread(data:PointCloud2):
+        pcd = point_cloud2.read_points(data, field_names=fields)
+        pcd = np.array(list(pcd), dtype=np.float32)
+        print(rospy.Time.to_sec(data.header.stamp), pcd.shape)
+
+        mBuf.acquire()
+        keypointsBuf.append([data, pcd])
+        mBuf.release()
+    
+    if args.multi_threads_mode:
+        threading.Thread(target=keypointsCloudHandlerThread, args=[data]).start()
+    else: keypointsCloudHandlerThread(data)
 
 
 def main():
@@ -85,10 +106,11 @@ def main():
 
     BUFFER_SIZE = 10
     systemInited = False
+    rate = rospy.Rate(50)
 
     while not rospy.is_shutdown():
         if len(allpointsBuf)>0 and len(keypointsBuf)>0:
-            timeAllPoints = rospy.Time.to_sec(allpointsBuf[0].header.stamp)
+            timeAllPoints = rospy.Time.to_sec(allpointsBuf[0][0].header.stamp)
             timeKeyPoints = rospy.Time.to_sec(keypointsBuf[0][0].header.stamp)
             if timeAllPoints != timeKeyPoints:
                 print("unsync message!")
@@ -133,7 +155,7 @@ def main():
                 q_w_curr_ = q_w_curr.as_quat()
                 
                 laserOdometry = Odometry()
-                laserOdometry.header = allpoints.header
+                laserOdometry.header = allpoints[0].header
                 laserOdometry.header.frame_id = "camera_init"
                 laserOdometry.child_frame_id = "/laser_odom"
                 laserOdometry.pose.pose.orientation.x = q_w_curr_[0]
@@ -150,26 +172,26 @@ def main():
                 laserPath.header.stamp = laserOdometry.header.stamp
                 laserPath.poses.append(laserPose)
                 
-                pcd = point_cloud2.read_points(allpoints, field_names=fields)
-                pcd = np.array(list(pcd), dtype=np.float32)
-                pubmsg.header = allpoints.header
-                pubmsg.width = pcd.shape[0]
+                pubmsg.header = allpoints[0].header
+                pubmsg.width = allpoints[1].shape[0]
                 pubmsg.row_step = pubmsg.point_step * pubmsg.width
-                pubmsg.data = pcd.tobytes()
+                pubmsg.data = allpoints[1].tobytes()
 
                 pubKeypointsMsg.header = keypoints[0].header
                 pubKeypointsMsg.width = keypoints[1].shape[0]
                 pubKeypointsMsg.row_step = pubKeypointsMsg.point_step * pubKeypointsMsg.width
                 pubKeypointsMsg.data = keypoints[1].tobytes()
 
-                pubLaserCloudLast.publish(pubmsg) 
+                pubLaserCloudLast.publish(pubmsg)
                 pubKeypointsLast.publish(pubKeypointsMsg)
                 pubLaserOdometry.publish(laserOdometry)
                 pubLaserPath.publish(laserPath)
             
             s_points, s_desc = t_points, t_desc
-            print(rospy.Time.to_sec(allpoints.header.stamp), end=' ')
+            print(rospy.Time.to_sec(allpoints[0].header.stamp), end=' ')
             print(time.time()-start, '\n')
+        
+        rate.sleep()
     
     rospy.spin()
 

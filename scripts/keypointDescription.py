@@ -1,6 +1,7 @@
 import time
 import torch
 import rospy
+import argparse
 import threading
 import numpy as np
 from typing import List
@@ -9,6 +10,12 @@ from models.kpfcnn import KPFCNN
 from sensor_msgs import point_cloud2
 from sensor_msgs.msg import PointCloud2, PointField
 from datasets.precompute import precompute_data
+
+
+paser = argparse.ArgumentParser()
+paser.add_argument("--num_keypoints", type=int, default=4000)
+paser.add_argument("--multi_threads_mode", type=bool, default=False)
+args = paser.parse_args()
 
 
 msgBuf: List[list] = list()
@@ -86,7 +93,7 @@ def main():
             data = np.concatenate(data, axis=-1, dtype=np.float32)
             pubmsg.data = data.tobytes()
             
-            data = sample_keypoints_with_scores(data, data[:, 4], 3500)
+            data = sample_keypoints_with_scores(data, data[:, 4], args.num_keypoints)
             pubKeypointsMsg.header = pubmsg.header
             pubKeypointsMsg.width = data.shape[0]
             pubKeypointsMsg.row_step = pubKeypointsMsg.point_step * data.shape[0]

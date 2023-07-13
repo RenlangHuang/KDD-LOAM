@@ -14,7 +14,8 @@ from scipy.spatial.transform import Rotation as R
 
 
 paser = argparse.ArgumentParser()
-paser.add_argument("--multi_threads_mode", type=bool, default=False)
+paser.add_argument("--num_keypoints", type=int, default=4000)
+paser.add_argument("--multi_threads_mode", type=bool, default=True)
 args = paser.parse_args()
 
 
@@ -82,11 +83,11 @@ def keypointsCloudHandler(data:PointCloud2):
 def main():
 
     rospy.init_node("odometry", anonymous=False)
-    rospy.Subscriber("/velodyne_cloud_2", PointCloud2, laserCloudHandler, queue_size=100)
+    rospy.Subscriber("/laser_cloud_2", PointCloud2, laserCloudHandler, queue_size=100)
     rospy.Subscriber("/laser_cloud_keypoints", PointCloud2, keypointsCloudHandler, queue_size=100)
 
-    pubLaserCloudLast = rospy.Publisher("/velodyne_cloud_3", PointCloud2, queue_size=100)
-    pubKeypointsLast = rospy.Publisher("/laser_cloud_keypoints_last", PointCloud2, queue_size=100)
+    pubLaserCloudLast = rospy.Publisher("/laser_cloud_3", PointCloud2, queue_size=100)
+    pubKeypointsLast = rospy.Publisher("/laser_keypoints_last", PointCloud2, queue_size=100)
     pubLaserOdometry = rospy.Publisher("/laser_odom_to_init", Odometry, queue_size=100)
     pubLaserPath = rospy.Publisher("/laser_odom_path", Path, queue_size=100)
 
@@ -126,8 +127,17 @@ def main():
             print('buffer length: ', len(allpointsBuf))
             mBuf.release()
             
-            t_points = keypoints[1][:, :3]
-            t_desc = keypoints[1][:, -32:]
+            # use probabilistically sampled keypoints
+            # more accurate with >2500 points
+            # but less efficient, lower inlier ratio
+            # t_points = keypoints[1][:, :3]
+            # t_desc = keypoints[1][:, -32:]
+            
+            # sort keypoints by saliency uncertainty
+            # less accurate with >2500 points
+            # more efficient, higher inlier ratiod
+            t_points = allpoints[1][:4000, :3]
+            t_desc = allpoints[1][:4000, -32:]
             
             if systemInited is not True:
                 systemInited = True
@@ -147,7 +157,7 @@ def main():
                     o3d.pipelines.registration.CorrespondenceCheckerBasedOnDistance(params["dist_prune"])],
                     o3d.pipelines.registration.RANSACConvergenceCriteria(params["ransac_max_iters"], 0.999))
                 print(trans); trans = np.array(trans.transformation)
-            
+
                 t_last_curr  = trans[:3, -1:]
                 q_last_curr = R.from_matrix(trans[:3, :3])
                 t_w_curr = t_w_curr + q_w_curr.as_matrix() @ t_last_curr

@@ -15,7 +15,20 @@ Follow [Ceres Installation](http://ceres-solver.org/installation.html).
 PCL 1.12.0 is tested.
 Follow [PCL Installation](http://www.pointclouds.org/downloads/linux.html).
 
-### 1.4. **Python** and **CUDA**, **CUDNN**
+### 1.4. **Open3D (C++)**
+Open3D 0.17.0 is tested
+```
+git clone --recursive https://github.com/intel-isl/Open3D
+cd Open3D
+util/install-deps-ubuntu.sh
+mkdir -p build
+cd build
+cmake ..
+make -j4
+sudo make install
+```
+
+### 1.5. **Python** and **CUDA**, **CUDNN**
 Python 3 (Python 3.7 is tested, conda is recommended).
 
 requirements (pip installation): numpy, scipy, torch, torchvision, nibabel, open3d, rospy
@@ -28,7 +41,7 @@ Clone the repository and catkin_make:
     cd ~/catkin_ws/src
     git clone https://github.com/NeSC-IV/KDD-LOAM.git
     cd ../
-    catkin_make
+    catkin_make -DPYTHON_EXECUTABLE=/usr/bin/python3
     source ~/catkin_ws/devel/setup.bash
     cd ~/catkin_ws/scripts/datasets/cpp_extensions
     sh compile_wrappers.sh
@@ -37,19 +50,12 @@ Clone the repository and catkin_make:
 ## 3. KITTI Example (Velodyne HDL-64)
 Download [KITTI Odometry dataset](http://www.cvlibs.net/datasets/kitti/eval_odometry.php) to YOUR_DATASET_FOLDER and set the `dataset_folder` and `sequence_number` parameters in `kitti_publisher.launch` file. Note you also convert KITTI dataset to bag file for easy use by setting proper parameters in `kitti_helper.launch`. 
 
-python version (tested):
 ```
     cd ~/catkin_ws/src/scripts
-    python keypointsDescription.py --num_keypoints 4500
-    python odometry.py --multi_threads_mode True
-    python mapping.py
-    roslaunch aloam_velodyne kitti_publisher.launch
-```
-C++ version (with bugs):
-```
-    cd ~/catkin_ws/src/scripts
-    python keypointsDescription.py
-    roslaunch aloam_velodyne kddloam_velodyne_HDL_64.launch
+    python keypointsDescription.py --num_keypoints 5000
+    python odometry.py --num_keypoints 4000 --multi_threads_mode True
+    rosrun aloam_velodyne curvatureEstimate
+    rosrun aloam_velodyne mapping
     roslaunch aloam_velodyne kitti_publisher.launch
 ```
 

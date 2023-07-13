@@ -5,8 +5,8 @@
 #include <string>
 #include <vector>
 #include <opencv2/opencv.hpp>
-#include <image_transport/image_transport.h>
 #include <opencv2/highgui/highgui.hpp>
+#include <image_transport/image_transport.h>
 #include <nav_msgs/Odometry.h>
 #include <nav_msgs/Path.h>
 #include <ros/ros.h>
@@ -57,13 +57,14 @@ int main(int argc, char** argv)
     std::cout << "Reading sequence " << sequence_number << " from " << dataset_folder << '\n';
 
     ros::Publisher pub_laser_cloud = n.advertise<sensor_msgs::PointCloud2>("/velodyne_points", 2);
+    //ros::Publisher pub_laser_cloud = n.advertise<sensor_msgs::PointCloud2>("/velodyne_cloud", 2);
     ros::Publisher pubOdomGT = n.advertise<nav_msgs::Odometry> ("/odometry_gt", 5);
     ros::Publisher pubPathGT = n.advertise<nav_msgs::Path> ("/path_gt", 5);
-
+    /*
     image_transport::ImageTransport it(n);
     image_transport::Publisher pub_image_left = it.advertise("/image_left", 2);
     image_transport::Publisher pub_image_right = it.advertise("/image_right", 2);
-
+    */
     nav_msgs::Odometry odomGT;
     odomGT.header.frame_id = "camera_init";
     odomGT.child_frame_id = "/ground_truth";
@@ -137,7 +138,6 @@ int main(int argc, char** argv)
                         << std::setfill('0') << std::setw(6) << line_num << ".bin";
         std::vector<float> lidar_data = read_lidar_data(lidar_data_path.str());
 
-        //pcl::PointCloud<pcl::PointXYZI> laser_cloud;
         pcl::PointCloud<pcl::PointXYZI>::Ptr laser_cloud(new pcl::PointCloud<pcl::PointXYZI>());
         for (std::size_t i = 0; i < lidar_data.size(); i += 4) {
             pcl::PointXYZI point;
@@ -150,16 +150,19 @@ int main(int argc, char** argv)
                 (*laser_cloud).push_back(point);
             }
         }
-        
+        /*
         pcl::PointCloud<pcl::PointXYZI> GridSubsampledCloud;
         pcl::VoxelGrid<pcl::PointXYZI> downSizeFilter;
         downSizeFilter.setInputCloud(laser_cloud);
         downSizeFilter.setLeafSize(0.3, 0.3, 0.3);
         downSizeFilter.filter(GridSubsampledCloud);
         std::cout << "totally " << GridSubsampledCloud.size() << " points in this lidar frame, ";
+        */
+        std::cout << "totally " << laser_cloud->size() << " points in this lidar frame, ";
 
         sensor_msgs::PointCloud2 laser_cloud_msg;
-        pcl::toROSMsg(GridSubsampledCloud, laser_cloud_msg);
+        pcl::toROSMsg(*laser_cloud, laser_cloud_msg);
+        //pcl::toROSMsg(GridSubsampledCloud, laser_cloud_msg);
         laser_cloud_msg.header.stamp = ros::Time().fromSec(timestamp);
         laser_cloud_msg.header.frame_id = "camera_init";
         pub_laser_cloud.publish(laser_cloud_msg);

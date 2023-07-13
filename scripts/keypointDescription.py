@@ -12,9 +12,10 @@ from sensor_msgs.msg import PointCloud2, PointField
 from datasets.precompute import precompute_data
 
 
+# NOTATION: these keypoints are used for scan-to-map registration (mapping)
+# rather than for registration of two consecutive point clouds (odometry)
 paser = argparse.ArgumentParser()
-paser.add_argument("--num_keypoints", type=int, default=4000)
-paser.add_argument("--multi_threads_mode", type=bool, default=False)
+paser.add_argument("--num_keypoints", type=int, default=5000)
 args = paser.parse_args()
 
 
@@ -57,20 +58,23 @@ def laserCloudHandler(data:PointCloud2):
     mBuf.release()
 
 
-def sample_keypoints_with_scores(points: np.ndarray, saliency: np.ndarray, num_keypoints):
-    scores = (saliency - 1.0) / 0.1
+def random_sample_keypoints_with_scores(points: np.ndarray, saliency: np.ndarray, num_keypoints: int):
     num_points = points.shape[0]
+    score = (saliency - 1.0) / 0.1
+    score = np.exp(-score)
     if num_points > num_keypoints:
-        indices = np.argsort(scores)[:num_keypoints]
+        indices = np.arange(num_points)
+        probs = score / np.sum(score)
+        indices = np.random.choice(indices, num_keypoints, replace=False, p=probs)
         points = points[indices]
     return points
 
 
 def main():
     rospy.init_node("keypointDescription", anonymous=False)
-    pubLaserCloudLast = rospy.Publisher("/velodyne_cloud_2", PointCloud2, queue_size=100)
+    pubLaserCloudLast = rospy.Publisher("/laser_cloud_2", PointCloud2, queue_size=100)
     pubKeypointsLast = rospy.Publisher("/laser_cloud_keypoints", PointCloud2, queue_size=100)
-    rospy.Subscriber("/velodyne_points", PointCloud2, laserCloudHandler, queue_size=100)
+    rospy.Subscriber("/velodyne_cloud", PointCloud2, laserCloudHandler, queue_size=100)
     
     while not rospy.is_shutdown():
         if len(msgBuf) > 0:
@@ -91,9 +95,11 @@ def main():
             pubmsg.row_step = pubmsg.point_step * msg[1].shape[0]
             data = [msg[1], saliency.cpu().numpy(), descriptor.cpu().numpy()]
             data = np.concatenate(data, axis=-1, dtype=np.float32)
+            data = data[np.argsort(data[:, 4])]
             pubmsg.data = data.tobytes()
             
-            data = sample_keypoints_with_scores(data, data[:, 4], args.num_keypoints)
+            #data = data[:args.num_keypoints] # sort by saliency
+            data = random_sample_keypoints_with_scores(data, data[:, 4], args.num_keypoints)
             pubKeypointsMsg.header = pubmsg.header
             pubKeypointsMsg.width = data.shape[0]
             pubKeypointsMsg.row_step = pubKeypointsMsg.point_step * data.shape[0]

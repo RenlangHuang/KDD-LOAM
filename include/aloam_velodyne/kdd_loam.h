@@ -1,6 +1,7 @@
 #pragma once
 #define PCL_NO_PRECOMPILE
 #include <cmath>
+#include <open3d/Open3D.h>
 #include <pcl/point_types.h>
 #include <pcl/point_cloud.h>
 #include <pcl/io/pcd_io.h>
@@ -30,22 +31,11 @@ POINT_CLOUD_REGISTER_POINT_STRUCT (
     (array, descriptor, descriptor)
 )
 
-inline double rad2deg(double radians)
-{
-    return radians * 180.0 / M_PI;
-}
-
-inline double deg2rad(double degrees)
-{
-    return degrees * M_PI / 180.0;
-}
-
 void cloudConverter(
     const pcl::PointCloud<pcl::PointXYZID>::Ptr pcd,
     const pcl::PointCloud<pcl::Descriptor>::Ptr desc,
     const pcl::PointCloud<pcl::PointXYZ>::Ptr xyz)
 {
-    std::cout << "totally " << pcd->size() << " points\n";
     for (size_t i = 0; i < pcd->size(); i++) {
         pcl::PointXYZ point;
         pcl::Descriptor feature;
@@ -58,8 +48,23 @@ void cloudConverter(
         desc->push_back(feature);
         xyz->push_back(point);
     }
-    std::cout << desc->at(0) << std::endl;
-    std::cout << desc->at(1) << std::endl;
-    std::cout << xyz->at(0) << std::endl;
-    std::cout << xyz->at(1) << std::endl;
+}
+
+
+void PCLO3DConverter(
+    const pcl::PointCloud<pcl::PointXYZID>::Ptr pcd,
+    const std::shared_ptr<open3d::geometry::PointCloud> xyz,
+    const std::shared_ptr<open3d::pipelines::registration::Feature> desc)
+{
+    xyz->Clear();
+    desc->Resize(32, pcd->size());
+    for (size_t i = 0; i < pcd->size(); i++) {
+        Eigen::Vector3d point(
+            pcd->points[i].x, pcd->points[i].y, pcd->points[i].z
+        );
+        xyz->points_.push_back(point);
+        for (int k = 0; k < 32; k++) {
+            desc->data_(k, i) = pcd->points[i].descriptor[k];
+        }
+    }
 }

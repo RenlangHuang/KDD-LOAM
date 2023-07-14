@@ -1,6 +1,5 @@
 #include <math.h>
 #include <vector>
-#include <aloam_velodyne/common.h>
 #include <nav_msgs/Odometry.h>
 #include <nav_msgs/Path.h>
 #include <geometry_msgs/PoseStamped.h>
@@ -11,6 +10,7 @@
 #include <pcl/filters/voxel_grid.h>
 #include <pcl/kdtree/kdtree_flann.h>
 #include <pcl/filters/uniform_sampling.h>
+#include <open3d/Open3D.h>
 #include <ros/ros.h>
 #include <sensor_msgs/Imu.h>
 #include <sensor_msgs/PointCloud2.h>
@@ -24,10 +24,11 @@
 #include <iostream>
 #include <string>
 
-//#include "aloam_velodyne/common.h"
+#include "aloam_velodyne/common.h"
 #include "aloam_velodyne/tic_toc.h"
 #include "aloam_velodyne/kdd_loam.h"
 #include "aloam_velodyne/ransac.h"
+
 
 /*
 Here we have two schemes for mapping,
@@ -80,8 +81,10 @@ pcl::PointCloud<pcl::PointXYZID>::Ptr laserCloudFull(new pcl::PointCloud<pcl::Po
 pcl::PointCloud<pcl::PointXYZID>::Ptr SalientPointsArray[laserCloudNum];
 pcl::PointCloud<pcl::PointXYZID>::Ptr NonSalientPointsArray[laserCloudNum];
 
-//kd-tree
 pcl::KdTreeFLANN<pcl::PointXYZ>::Ptr kdtreeKeypointsFromMap(new pcl::KdTreeFLANN<pcl::PointXYZ>());
+
+std::vector<std::reference_wrapper<const open3d::pipelines::registration::CorrespondenceChecker>> checkers;
+open3d::pipelines::registration::ICPConvergenceCriteria criteria(1e-6, 1e-6, 10);
 
 double parameters[7] = {0, 0, 0, 1, 0, 0, 0};
 Eigen::Quaterniond q_w_curr(1, 0, 0, 0);
@@ -457,14 +460,183 @@ void mapping()
 			int laserCloudKeypointsFromMapNum = laserCloudKeypointsFromMap->points.size();
 			int laserCloudKeypointsStackNum = keypointsLast->points.size();
 
+			std::shared_ptr<open3d::geometry::PointCloud> t_points(new open3d::geometry::PointCloud);
+			std::shared_ptr<open3d::pipelines::registration::Feature> t_desc(new open3d::pipelines::registration::Feature);
+			PCLO3DConverter(keypointsLast, t_points, t_desc);
+
 			printf("map prepare time %f ms\n", t_prepare.toc());
 			printf("map keypoints num %d\n", laserCloudKeypointsFromMapNum);
 
-			/*TODO: scan-to-map registration*/
+			/* scan-to-map registration */
+			
+			if (laserCloudKeypointsFromMapNum > 500) {
+				TicToc t_reg;
 
+				std::shared_ptr<open3d::geometry::PointCloud> s_points(new open3d::geometry::PointCloud);
+				std::shared_ptr<open3d::pipelines::registration::Feature> s_desc(
+					new open3d::pipelines::registration::Feature);
+				PCLO3DConverter(laserCloudKeypointsFromMap, s_points, s_desc);
+
+				/*
+
+				Eigen::Isometry3d T = Eigen::Isometry3d::Identity();
+				T.rotate(q_w_curr); T.pretranslate(t_w_curr);
+				Eigen::Matrix4d T_w_curr = T.matrix();
+				t_points->Transform(T_w_curr);
+
+				open3d::pipelines::registration::RegistrationResult trans;
+				trans = open3d::pipelines::registration::RegistrationFromLocalToGlobal(
+					*s_points, *t_points, *s_desc, *t_desc, 1.8, 0.3, 2, 0.7, 0.9, criteria
+				);
+
+				printf("Registration time: %f ms, ", t_reg.toc());
+				printf("fitness: %f, ", trans.fitness_);
+				printf("inlier rmse: %f, ", trans.inlier_rmse_);
+				printf("correspondences: %ld\n", trans.correspondence_set_.size());
+				t_points->Transform(trans.transformation_);
+				T_w_curr = trans.transformation_ * T_w_curr;
+
+				//q_w_curr = Eigen::Quaterniond(T_w_curr.block<3, 3>(0, 0)).normalized();
+				//t_w_curr << T_w_curr(0,3), T_w_curr(1,3), T_w_curr(2,3);
+				
+				Eigen::Matrix3d rotmat;
+				Eigen::Vector3d t_last_curr;
+				rotmat << trans.transformation_(0,0), trans.transformation_(0,1), trans.transformation_(0,2), 
+						  trans.transformation_(1,0), trans.transformation_(1,1), trans.transformation_(1,2),
+						  trans.transformation_(2,0), trans.transformation_(2,1), trans.transformation_(2,2);
+				t_last_curr << trans.transformation_(0,3), trans.transformation_(1,3), trans.transformation_(2,3);
+
+				Eigen::Quaterniond q_last_curr(rotmat);
+				q_last_curr.normalize();
+
+				//t_w_curr = t_w_curr + q_w_curr * t_last_curr;
+				//q_w_curr = q_w_curr * q_last_curr;
+				
+				t_w_curr = t_last_curr + q_last_curr * t_w_curr;
+				q_w_curr = q_last_curr * q_w_curr;*/
+			}
 			/*TODO: update the map and publish*/
+			transformUpdate();
 
-			printf("mapping process: %.2f ms\n", t_whole.toc());
+			TicToc t_add;
+			for (int i = 0; i < laserCloudKeypointsStackNum; i++) {
+				keypointsLast->points[i].x = t_points->points_[i][0];
+				keypointsLast->points[i].y = t_points->points_[i][1];
+				keypointsLast->points[i].z = t_points->points_[i][2];
+
+				int cubeI = int((keypointsLast->points[i].x + 25.0) / 50.0) + laserCloudCenWidth;
+				int cubeJ = int((keypointsLast->points[i].y + 25.0) / 50.0) + laserCloudCenHeight;
+				int cubeK = int((keypointsLast->points[i].z + 25.0) / 50.0) + laserCloudCenDepth;
+
+				if (keypointsLast->points[i].x + 25.0 < 0) cubeI--;
+				if (keypointsLast->points[i].y + 25.0 < 0) cubeJ--;
+				if (keypointsLast->points[i].z + 25.0 < 0) cubeK--;
+
+				if (cubeI >= 0 && cubeI < laserCloudWidth &&
+					cubeJ >= 0 && cubeJ < laserCloudHeight &&
+					cubeK >= 0 && cubeK < laserCloudDepth)
+				{
+					int cubeInd = cubeI + laserCloudWidth * cubeJ + laserCloudWidth * laserCloudHeight * cubeK;
+					SalientPointsArray[cubeInd]->push_back(keypointsLast->points[i]);
+				}
+			}
+			printf("add points time %f ms\n", t_add.toc());
+
+			TicToc t_filter;
+			for (int i = 0; i < laserCloudValidNum; i++) {
+				int ind = laserCloudValidInd[i];
+				if (SalientPointsArray[ind]->size()<1) continue;
+
+				pcl::PointCloud<pcl::PointXYZID>::Ptr tmp(new pcl::PointCloud<pcl::PointXYZID>());
+				pcl::PointCloud<pcl::Descriptor>::Ptr desc(new pcl::PointCloud<pcl::Descriptor>());
+    			pcl::PointCloud<pcl::PointXYZ>::Ptr xyz(new pcl::PointCloud<pcl::PointXYZ>());
+				cloudConverter(SalientPointsArray[ind], desc, xyz);
+
+				downSizeFilter.setInputCloud(xyz);
+				downSizeFilter.filter(*xyz);
+				pcl::copyPointCloud(*SalientPointsArray[ind], *downSizeFilter.getIndices(), *tmp);
+				SalientPointsArray[ind] = tmp;
+				printf("uniform sampling from %ld to %ld\n",
+					desc->size(), SalientPointsArray[ind]->size() - downSizeFilter.getRemovedIndices()->size());
+			}
+			printf("filter time %f ms \n", t_filter.toc());
+			
+			TicToc t_pub;
+			//publish local surrounding map for every 5 frames
+			if (frameCount % 5 == 0) {
+				laserCloudSurround->clear();
+				for (int i = 0; i < laserCloudSurroundNum; i++) {
+					int ind = laserCloudSurroundInd[i];
+					*laserCloudSurround += *SalientPointsArray[ind];
+				}
+
+				sensor_msgs::PointCloud2 laserCloudSurround3;
+				pcl::toROSMsg(*laserCloudSurround, laserCloudSurround3);
+				laserCloudSurround3.header.stamp = ros::Time().fromSec(timeLaserOdometry);
+				laserCloudSurround3.header.frame_id = "camera_init";
+				pubLaserCloudSurround.publish(laserCloudSurround3);
+			}
+			//publish global map for every 20 frames
+			if (frameCount % 20 == 0) {
+				pcl::PointCloud<pcl::PointXYZID> laserCloudMap;
+				for (int i = 0; i < 4851; i++) {
+					laserCloudMap += *SalientPointsArray[i];
+				}
+				sensor_msgs::PointCloud2 laserCloudMsg;
+				pcl::toROSMsg(laserCloudMap, laserCloudMsg);
+				laserCloudMsg.header.stamp = ros::Time().fromSec(timeLaserOdometry);
+				laserCloudMsg.header.frame_id = "camera_init";
+				pubLaserCloudMap.publish(laserCloudMsg);
+			}
+
+			int laserCloudFullResNum = laserCloudFull->points.size();
+			for (int i = 0; i < laserCloudFullResNum; i++) {
+				pointAssociateToMap(&laserCloudFull->points[i], &laserCloudFull->points[i]);
+			}
+
+			sensor_msgs::PointCloud2 laserCloudFullRes3;
+			pcl::toROSMsg(*laserCloudFull, laserCloudFullRes3);
+			laserCloudFullRes3.header.stamp = ros::Time().fromSec(timeLaserOdometry);
+			laserCloudFullRes3.header.frame_id = "camera_init";
+			pubLaserCloudFullRes.publish(laserCloudFullRes3);
+
+			printf("mapping pub time %f ms \n", t_pub.toc());
+
+			nav_msgs::Odometry odomAftMapped;
+			odomAftMapped.header.frame_id = "camera_init";
+			odomAftMapped.child_frame_id = "/aft_mapped";
+			odomAftMapped.header.stamp = ros::Time().fromSec(timeLaserOdometry);
+			odomAftMapped.pose.pose.orientation.x = q_w_curr.x();
+			odomAftMapped.pose.pose.orientation.y = q_w_curr.y();
+			odomAftMapped.pose.pose.orientation.z = q_w_curr.z();
+			odomAftMapped.pose.pose.orientation.w = q_w_curr.w();
+			odomAftMapped.pose.pose.position.x = t_w_curr.x();
+			odomAftMapped.pose.pose.position.y = t_w_curr.y();
+			odomAftMapped.pose.pose.position.z = t_w_curr.z();
+			pubOdomAftMapped.publish(odomAftMapped);
+
+			geometry_msgs::PoseStamped laserAfterMappedPose;
+			laserAfterMappedPose.header = odomAftMapped.header;
+			laserAfterMappedPose.pose = odomAftMapped.pose.pose;
+			laserAfterMappedPath.header.stamp = odomAftMapped.header.stamp;
+			laserAfterMappedPath.header.frame_id = "camera_init";
+			laserAfterMappedPath.poses.push_back(laserAfterMappedPose);
+			pubLaserAfterMappedPath.publish(laserAfterMappedPath);
+
+			static tf::TransformBroadcaster br;
+			tf::Transform transform;
+			tf::Quaternion q;
+			transform.setOrigin(tf::Vector3(t_w_curr(0),t_w_curr(1),t_w_curr(2)));
+			q.setW(q_w_curr.w());
+			q.setX(q_w_curr.x());
+			q.setY(q_w_curr.y());
+			q.setZ(q_w_curr.z());
+			transform.setRotation(q);
+			br.sendTransform(tf::StampedTransform(transform, odomAftMapped.header.stamp, "camera_init", "/aft_mapped"));
+
+			frameCount++;
+
+			printf("mapping process: %.2f ms\n\n", t_whole.toc());
         }
 		std::chrono::milliseconds dura(2);
         std::this_thread::sleep_for(dura);
@@ -479,7 +651,8 @@ int main(int argc, char **argv)
 
 	nh.param<int>("num_salient_points", num_salient_points, 6000);
 
-	downSizeFilter.setRadiusSearch(0.6);
+	//downSizeFilter.setRadiusSearch(0.6);
+	downSizeFilter.setRadiusSearch(0.3);
 
 	ros::Subscriber subLaserKeypointsLast = nh.subscribe<sensor_msgs::PointCloud2>("/laser_keypoints_last", 100, keypointsCloudHandler);
 	ros::Subscriber subLaserOdometry = nh.subscribe<nav_msgs::Odometry>("/laser_odom_to_init", 100, odometryHandler);
@@ -497,6 +670,11 @@ int main(int argc, char **argv)
 		SalientPointsArray[i].reset(new pcl::PointCloud<pcl::PointXYZID>());
         NonSalientPointsArray[i].reset(new pcl::PointCloud<pcl::PointXYZID>());
 	}
+
+    auto length_checker = open3d::pipelines::registration::CorrespondenceCheckerBasedOnEdgeLength(0.8);
+    auto distance_checker = open3d::pipelines::registration::CorrespondenceCheckerBasedOnDistance(0.3);
+    checkers.push_back(length_checker);
+    checkers.push_back(distance_checker);
 
 	std::thread mapping_process{mapping};
 	ros::spin();

@@ -43,7 +43,7 @@ Clone the repository and catkin_make:
     cd ../
     catkin_make -DPYTHON_EXECUTABLE=/usr/bin/python3
     source ~/catkin_ws/devel/setup.bash
-    cd ~/catkin_ws/scripts/datasets/cpp_extensions
+    cd ~/catkin_ws/scripts/cpp_extensions
     sh compile_wrappers.sh
 ```
 

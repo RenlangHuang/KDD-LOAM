@@ -53,23 +53,23 @@ void keypointsHandler(const sensor_msgs::PointCloud2ConstPtr &laserCloud)
 }
 
 
-void PCLO3DConverter(
-    const pcl::PointCloud<pcl::PointXYZID>::Ptr pcd,
-    const std::shared_ptr<open3d::geometry::PointCloud> xyz,
-    const std::shared_ptr<open3d::pipelines::registration::Feature> desc)
-{
-    xyz->Clear();
-    desc->Resize(32, pcd->size());
-    for (size_t i = 0; i < pcd->size(); i++) {
-        Eigen::Vector3d point(
-            pcd->points[i].x, pcd->points[i].y, pcd->points[i].z
-        );
-        xyz->points_.push_back(point);
-        for (int k = 0; k < 32; k++) {
-            desc->data_(k, i) = pcd->points[i].descriptor[k];
-        }
-    }
-}
+// void PCLO3DConverter(
+//     const pcl::PointCloud<pcl::PointXYZID>::Ptr pcd,
+//     const std::shared_ptr<open3d::geometry::PointCloud> xyz,
+//     const std::shared_ptr<open3d::pipelines::registration::Feature> desc)
+// {
+//     xyz->Clear();
+//     desc->Resize(32, pcd->size());
+//     for (size_t i = 0; i < pcd->size(); i++) {
+//         Eigen::Vector3d point(
+//             pcd->points[i].x, pcd->points[i].y, pcd->points[i].z
+//         );
+//         xyz->points_.push_back(point);
+//         for (int k = 0; k < 32; k++) {
+//             desc->data_(k, i) = pcd->points[i].descriptor[k];
+//         }
+//     }
+// }
 
 
 int main(int argc, char **argv)

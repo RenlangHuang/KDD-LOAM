@@ -42,3 +42,24 @@ RegistrationResult RegistrationFromLocalToGlobal(
 }  // namespace registration
 }  // namespace pipelines
 }  // namespace open3d
+
+
+//updated Zhaoml 2023-07-15 11:57
+int UniformRandInt(const int min, const int max);
+static open3d::pipelines::registration::RegistrationResult GetRegistrationResultAndCorrespondences(
+        const open3d::geometry::PointCloud &source,
+        const open3d::geometry::PointCloud &target,
+        const open3d::geometry::KDTreeFlann &target_kdtree,
+        double max_correspondence_distance,
+        const Eigen::Matrix4d &transformation);
+open3d::pipelines::registration::RegistrationResult ransac_based_on_given_model(
+    const open3d::geometry::PointCloud &pc1,
+    const open3d::geometry::PointCloud &pc2,
+    const open3d::pipelines::registration::Feature &f1,
+    const open3d::pipelines::registration::Feature &f2,
+    const Eigen::Matrix4d &transformation_matrix, //given model of odometry
+    double max_correspondence_distance,
+    const open3d::pipelines::registration::TransformationEstimation &estimation,
+    int ransac_epoches,
+    const open3d::pipelines::registration::RANSACConvergenceCriteria &criteria,
+    const std::vector<std::reference_wrapper<const open3d::pipelines::registration::CorrespondenceChecker>> &checkers);

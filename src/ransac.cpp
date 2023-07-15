@@ -294,7 +294,7 @@ open3d::pipelines::registration::RegistrationResult ransac_based_on_given_model(
 #ifdef _OPENMP
 #pragma omp for nowait
 #endif
-        for(int i;i<criteria.max_iteration_;i++){
+        for(int i=0;i<criteria.max_iteration_;i++){
             if(!finished){
                 std::vector<double> dists(num_similar_feature);
                 Eigen::Matrix4d transformation_tmp;

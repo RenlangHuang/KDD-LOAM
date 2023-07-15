@@ -18,7 +18,7 @@ namespace pcl {
         float intensity;
         float saliency;
         array descriptor;
-        PCL_MAKE_ALIGNED_OPERATOR_NEW;
+        EIGEN_MAKE_ALIGNED_OPERATOR_NEW;
     } EIGEN_ALIGN16;
 }
 POINT_CLOUD_REGISTER_POINT_STRUCT (

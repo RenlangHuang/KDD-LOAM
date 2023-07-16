@@ -324,6 +324,16 @@ open3d::pipelines::registration::RegistrationResult ransac_based_on_given_model(
                     }
                 }
                 if(!check) continue;
+                transformation_tmp = estimation.ComputeTransformation(
+                        pc1, pc2, ransac_correspondence);
+                check = true;
+                for(const auto &checker:checkers){
+                    if(!checker.get().require_pointcloud_alignment_&&!checker.get().Check(pc1,pc2,ransac_correspondence,transformation_tmp)){
+                        check=false;
+                        break;
+                    }
+                }
+                if (!check) continue;
                 open3d::geometry::PointCloud pcd=pc1;
                 pcd.Transform(transformation_tmp);
                 auto result_tmp=GetRegistrationResultAndCorrespondences(pcd,pc2,kdtree,max_correspondence_distance,transformation_tmp);

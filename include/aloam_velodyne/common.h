@@ -1,53 +1,83 @@
-// This is an advanced implementation of the algorithm described in the following paper:
-//   J. Zhang and S. Singh. LOAM: Lidar Odometry and Mapping in Real-time.
-//     Robotics: Science and Systems Conference (RSS). Berkeley, CA, July 2014. 
-
-// Modifier: Tong Qin               qintonguav@gmail.com
-// 	         Shaozu Cao 		    saozu.cao@connect.ust.hk
-
-
-// Copyright 2013, Ji Zhang, Carnegie Mellon University
-// Further contributions copyright (c) 2016, Southwest Research Institute
-// All rights reserved.
-//
-// Redistribution and use in source and binary forms, with or without
-// modification, are permitted provided that the following conditions are met:
-//
-// 1. Redistributions of source code must retain the above copyright notice,
-//    this list of conditions and the following disclaimer.
-// 2. Redistributions in binary form must reproduce the above copyright notice,
-//    this list of conditions and the following disclaimer in the documentation
-//    and/or other materials provided with the distribution.
-// 3. Neither the name of the copyright holder nor the names of its
-//    contributors may be used to endorse or promote products derived from this
-//    software without specific prior written permission.
-//
-// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
-// AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-// IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
-// ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
-// LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
-// CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
-// SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
-// INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
-// CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
-// ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
-// POSSIBILITY OF SUCH DAMAGE.
-
 #pragma once
-
+#define PCL_NO_PRECOMPILE
 #include <cmath>
-
 #include <pcl/point_types.h>
+#include <pcl/point_cloud.h>
+#include <pcl/kdtree/kdtree_flann.h>
 
+
+typedef float array[32];
 typedef pcl::PointXYZI PointType;
+typedef Eigen::Matrix<float, 1, 32> Vector32;
 
-inline double rad2deg(double radians)
+namespace pcl {
+    struct PointXYZID {
+        PCL_ADD_POINT4D;
+        float intensity;
+        float saliency;
+        array descriptor;
+        PCL_MAKE_ALIGNED_OPERATOR_NEW;
+    } EIGEN_ALIGN16;
+}
+POINT_CLOUD_REGISTER_POINT_STRUCT (
+    pcl::PointXYZID,
+    (float, x, x)
+    (float, y, y)
+    (float, z, z)
+    (float, intensity, intensity)
+    (float, saliency, saliency)
+    (array, descriptor, descriptor)
+)
+
+
+void pcl_convert_XYZID_to_XYZI(
+    const pcl::PointCloud<pcl::PointXYZID>::Ptr source,
+    const pcl::PointCloud<pcl::PointXYZI>::Ptr target)
 {
-  return radians * 180.0 / M_PI;
+    target->clear();
+    for (size_t i = 0; i < source->size(); i++) {
+        pcl::PointXYZI point;
+        point.x = source->points[i].x;
+        point.y = source->points[i].y;
+        point.z = source->points[i].z;
+        point.intensity = source->points[i].intensity;
+        target->push_back(point);
+    }
 }
 
-inline double deg2rad(double degrees)
+
+float descriptor_distance(pcl::PointXYZID &a, pcl::PointXYZID &b) {
+    Vector32 a_desc = Eigen::Map<Vector32>(a.descriptor);
+    Vector32 b_desc = Eigen::Map<Vector32>(b.descriptor);
+    return (a_desc - b_desc).norm();
+}
+
+
+void assignNearestDescriptor(
+    const pcl::PointCloud<pcl::PointXYZID>::Ptr source,
+    const pcl::PointCloud<pcl::PointXYZI>::Ptr target,
+    const pcl::PointCloud<pcl::PointXYZID>::Ptr result)
 {
-  return degrees * M_PI / 180.0;
+    pcl::PointCloud<pcl::PointXYZI>::Ptr tmp(new pcl::PointCloud<pcl::PointXYZI>);
+    pcl_convert_XYZID_to_XYZI(source, tmp);
+    
+    pcl::KdTreeFLANN<PointType> kdtree;
+    kdtree.setInputCloud(tmp);
+    std::vector<int> Ind(1);
+    std::vector<float> SqDists(1);
+    result->clear();
+
+    for (size_t i = 0; i < target->points.size(); i++) {
+        pcl::PointXYZID point;
+        kdtree.nearestKSearch(target->points[i], 1, Ind, SqDists);
+        point.x = target->points[i].x;
+        point.y = target->points[i].y;
+        point.z = target->points[i].z;
+        point.intensity = target->points[i].intensity;
+        point.saliency = source->points[Ind[0]].saliency;
+        for (int k = 0; k < 32; k++) {
+            point.descriptor[k] = source->points[Ind[0]].descriptor[k];
+        }
+        result->push_back(point);
+    }
 }

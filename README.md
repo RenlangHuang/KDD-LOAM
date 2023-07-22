@@ -53,11 +53,10 @@ Download [KITTI Odometry dataset](http://www.cvlibs.net/datasets/kitti/eval_odom
 ```
     cd ~/catkin_ws/src/scripts
     python keypointsDescription.py --num_keypoints 5000
-    python odometry.py --num_keypoints 4000 --multi_threads_mode True
-    rosrun aloam_velodyne curvatureEstimate
-    rosrun aloam_velodyne mapping
+    python odometry.py --num_keypoints 4500 --multi_threads_mode True
+    rosrun aloam_velodyne kddloam_velodyne_HDL_64.launch
     roslaunch aloam_velodyne kitti_publisher.launch
 ```
 
 ## 4.Acknowledgements
-Thanks for LOAM(J. Zhang and S. Singh. LOAM: Lidar Odometry and Mapping in Real-time) and [A-LOAM](https://github.com/HKUST-Aerial-Robotics/A-LOAM).
+Thanks for LOAM(J. Zhang and S. Singh. LOAM: Lidar Odometry and Mapping in Real-time, RSS 2014) and [A-LOAM](https://github.com/HKUST-Aerial-Robotics/A-LOAM).

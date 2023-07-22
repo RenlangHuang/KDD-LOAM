@@ -15,6 +15,7 @@ from datasets.precompute import precompute_data
 # NOTATION: these keypoints are used for scan-to-map registration (mapping)
 # rather than for registration of two consecutive point clouds (odometry)
 paser = argparse.ArgumentParser()
+paser.add_argument("--sort", type=bool, default=True)
 paser.add_argument("--num_keypoints", type=int, default=5000)
 args = paser.parse_args()
 
@@ -95,11 +96,12 @@ def main():
             pubmsg.row_step = pubmsg.point_step * msg[1].shape[0]
             data = [msg[1], saliency.cpu().numpy(), descriptor.cpu().numpy()]
             data = np.concatenate(data, axis=-1, dtype=np.float32)
-            data = data[np.argsort(data[:, 4])]
+            if args.sort: data = data[np.argsort(data[:, 4])]
             pubmsg.data = data.tobytes()
             
-            #data = data[:args.num_keypoints] # sort by saliency
-            data = random_sample_keypoints_with_scores(data, data[:, 4], args.num_keypoints)
+            if args.sort: data = data[:args.num_keypoints] # sort by saliency
+            else: data = random_sample_keypoints_with_scores(data, data[:, 4], args.num_keypoints)
+
             pubKeypointsMsg.header = pubmsg.header
             pubKeypointsMsg.width = data.shape[0]
             pubKeypointsMsg.row_step = pubKeypointsMsg.point_step * data.shape[0]

@@ -1,6 +1,0 @@
-<launch>
-
-    <param name="odom_delay" type="double" value="0.1"/>
-    <node pkg="aloam_velodyne" type="kddOdometry" name="kddOdometry" output="screen" />
-
-</launch>

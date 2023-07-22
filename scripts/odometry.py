@@ -14,7 +14,8 @@ from scipy.spatial.transform import Rotation as R
 
 
 paser = argparse.ArgumentParser()
-paser.add_argument("--num_keypoints", type=int, default=4000)
+paser.add_argument("--num_keypoints", type=int, default=5000)
+paser.add_argument("--ransac_iterations", type=int, default=50000)
 paser.add_argument("--multi_threads_mode", type=bool, default=True)
 args = paser.parse_args()
 
@@ -25,8 +26,8 @@ allpointsBuf: List[List[PointCloud2]] = list()
 mBuf = threading.Lock()
 
 params = {
+    "ransac_max_iters": args.ransac_iterations,
     "ransac_inlier_threshold": 0.3,
-    "ransac_max_iters": 50000,
     "edge_prune": 0.8,
     "dist_prune": 0.3,
     "ransac_n": 4,
@@ -53,6 +54,7 @@ def laserCloudHandler(data:PointCloud2):
     def laserCloudHandlerThread(data:PointCloud2):
         pcd = point_cloud2.read_points(data, field_names=fields)
         pcd = np.array(list(pcd), dtype=np.float32)
+        pcd = pcd[np.argsort(pcd[:, 4])] # sort by saliency
         print(rospy.Time.to_sec(data.header.stamp), pcd.shape)
 
         mBuf.acquire()
@@ -88,8 +90,8 @@ def main():
 
     pubLaserCloudLast = rospy.Publisher("/laser_cloud_3", PointCloud2, queue_size=100)
     pubKeypointsLast = rospy.Publisher("/laser_keypoints_last", PointCloud2, queue_size=100)
-    pubLaserOdometry = rospy.Publisher("/laser_odom_to_init", Odometry, queue_size=100)
-    pubLaserPath = rospy.Publisher("/laser_odom_path", Path, queue_size=100)
+    pubLaserOdometry = rospy.Publisher("/kdd_odom_to_init", Odometry, queue_size=100)
+    pubLaserPath = rospy.Publisher("/kdd_odom_path", Path, queue_size=100)
 
     s_pcd = o3d.geometry.PointCloud()
     t_pcd = o3d.geometry.PointCloud()
@@ -130,14 +132,14 @@ def main():
             # use probabilistically sampled keypoints
             # more accurate with >2500 points
             # but less efficient, lower inlier ratio
-            # t_points = keypoints[1][:, :3]
-            # t_desc = keypoints[1][:, -32:]
+            #t_points = keypoints[1][:, :3]
+            #t_desc = keypoints[1][:, -32:]
             
             # sort keypoints by saliency uncertainty
             # less accurate with >2500 points
-            # more efficient, higher inlier ratiod
-            t_points = allpoints[1][:4000, :3]
-            t_desc = allpoints[1][:4000, -32:]
+            # more efficient, higher inlier ratio
+            t_points = allpoints[1][:args.num_keypoints, :3]
+            t_desc = allpoints[1][:args.num_keypoints, -32:]
             
             if systemInited is not True:
                 systemInited = True

@@ -65,7 +65,7 @@ pcl::PointCloud<PointType>::Ptr laserCloudSurfFromMap(new pcl::PointCloud<PointT
 pcl::PointCloud<pcl::PointXYZI>::Ptr keypointsFromMap(new pcl::PointCloud<pcl::PointXYZI>);
 
 //input & output: points in one frame. local --> global
-pcl::PointCloud<PointType>::Ptr laserCloudFullRes(new pcl::PointCloud<PointType>());
+pcl::PointCloud<pcl::PointXYZID>::Ptr laserCloudFullRes(new pcl::PointCloud<pcl::PointXYZID>());
 
 // points in every cube
 pcl::PointCloud<PointType>::Ptr laserCloudCornerArray[laserCloudNum];
@@ -314,7 +314,7 @@ void mapping()
 			// translate the local cube map in the local FOV
 			//  so that the cube in which the current pose is located
 			//  can be closer to the center of the local FOV,
-			// i.e., 3 < centerCubeI < 18， 3 < centerCubeJ < 18, 3 < centerCubeK < 8,
+			// i.e., 3 < centerCubeI < 18锛?3 < centerCubeJ < 18, 3 < centerCubeK < 8,
 			// then it will be more convenient to extent the cube map later.
 			while (centerCubeI < 3)
 			{
@@ -608,7 +608,7 @@ void mapping()
 					TicToc t_data;
 
                     int keypoints_num = 0;
-                    if (point_to_point_weight > 0.1) {
+                    if (point_to_point_weight > 0.1 && iterCount > 0) {
                         for (int i = 0; i < laserCloudKeypointsStackNum; i++) {
                             pointOri = keypointsFromScan->points[i];
                             pointAssociateToMap(&pointOri, &pointSel);
@@ -629,6 +629,9 @@ void mapping()
                             }
                         }
                     }
+
+                    Eigen::Matrix3d rot_mat = q_w_curr.toRotationMatrix();
+                    Eigen::Vector3d zvec(rot_mat(0, 2), rot_mat(1, 2), rot_mat(2, 2));
 
 					int corner_num = 0;
 					for (int i = 0; i < laserCloudCornerStackNum; i++) {
@@ -663,6 +666,9 @@ void mapping()
 							// note Eigen library sort eigenvalues in increasing order
 							Eigen::Vector3d unit_direction = saes.eigenvectors().col(2);
 							Eigen::Vector3d curr_point(pointOri.x, pointOri.y, pointOri.z);
+
+                            double weight = fabs(zvec.dot(unit_direction)) + 0.5;
+
 							if (saes.eigenvalues()[2] > 3 * saes.eigenvalues()[1])
 							{ 
 								Eigen::Vector3d point_on_line = center;
@@ -670,7 +676,7 @@ void mapping()
 								point_a = 0.1 * unit_direction + point_on_line;
 								point_b = -0.1 * unit_direction + point_on_line;
 
-								ceres::CostFunction *cost_function = LidarEdgeFactor::Create(curr_point, point_a, point_b, 1.0);
+								ceres::CostFunction *cost_function = LidarEdgeFactor::Create(curr_point, point_a, point_b, 1.0, weight);
 								problem.AddResidualBlock(cost_function, loss_function, parameters, parameters + 4);
 								corner_num++;	
 							}							
@@ -698,6 +704,11 @@ void mapping()
 							double negative_OA_dot_norm = 1 / norm.norm();
 							norm.normalize();
 
+                            double weight = fabs(zvec.dot(norm));
+                            weight = fabs(weight * weight * 2.0 - 1);
+                            if (weight > 0.8) weight = weight * 1.5;
+                            weight = weight + 0.5;
+
 							// Here n(pa, pb, pc) is unit norm of plane
 							bool planeValid = true;
 							for (int j = 0; j < 5; j++) {
@@ -715,7 +726,7 @@ void mapping()
 							Eigen::Vector3d curr_point(pointOri.x, pointOri.y, pointOri.z);
 							if (planeValid)
 							{
-								ceres::CostFunction *cost_function = LidarPlaneNormFactor::Create(curr_point, norm, negative_OA_dot_norm);
+								ceres::CostFunction *cost_function = LidarPlaneNormFactor::Create(curr_point, norm, negative_OA_dot_norm, weight);
 								problem.AddResidualBlock(cost_function, loss_function, parameters, parameters + 4);
 								surf_num++;
 							}
@@ -866,13 +877,16 @@ void mapping()
 			}
 
 			int laserCloudFullResNum = laserCloudFullRes->points.size();
+            pcl::PointCloud<pcl::PointXYZRGB>::Ptr colored(new pcl::PointCloud<pcl::PointXYZRGB>);
 			for (int i = 0; i < laserCloudFullResNum; i++)
 			{
-				pointAssociateToMap(&laserCloudFullRes->points[i], &laserCloudFullRes->points[i]);
+				keypointAssociateToMap(&laserCloudFullRes->points[i], &laserCloudFullRes->points[i]);
 			}
+            renderSaliency(laserCloudFullRes, colored);
 
 			sensor_msgs::PointCloud2 laserCloudFullRes3;
-			pcl::toROSMsg(*laserCloudFullRes, laserCloudFullRes3);
+            pcl::toROSMsg(*colored, laserCloudFullRes3);
+            //pcl::toROSMsg(*laserCloudFullRes, laserCloudFullRes3);
 			laserCloudFullRes3.header.stamp = ros::Time().fromSec(timeLaserOdometry);
 			laserCloudFullRes3.header.frame_id = "camera_init";
 			pubLaserCloudFullRes.publish(laserCloudFullRes3);
@@ -938,7 +952,7 @@ int main(int argc, char **argv)
 	ros::Subscriber subLaserCloudCornerLast = nh.subscribe<sensor_msgs::PointCloud2>("/laser_cloud_less_sharp", 100, laserCloudCornerLastHandler);
 	ros::Subscriber subLaserCloudSurfLast = nh.subscribe<sensor_msgs::PointCloud2>("/laser_cloud_less_flat", 100, laserCloudSurfLastHandler);
 	//ros::Subscriber subLaserOdometry = nh.subscribe<nav_msgs::Odometry>("/laser_odom_to_init", 100, laserOdometryHandler);
-	ros::Subscriber subLaserCloudFullRes = nh.subscribe<sensor_msgs::PointCloud2>("/velodyne_cloud", 100, laserCloudFullResHandler);
+	ros::Subscriber subLaserCloudFullRes = nh.subscribe<sensor_msgs::PointCloud2>("/laser_cloud_2", 100, laserCloudFullResHandler);
 	ros::Subscriber subLaserOdometry = nh.subscribe<nav_msgs::Odometry>("/kdd_odom_to_init", 100, laserOdometryHandler);
 
 	pubLaserCloudSurround = nh.advertise<sensor_msgs::PointCloud2>("/laser_cloud_surround", 100);

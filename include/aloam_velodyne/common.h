@@ -81,3 +81,48 @@ void assignNearestDescriptor(
         result->push_back(point);
     }
 }
+
+
+void renderSaliency(
+    const pcl::PointCloud<pcl::PointXYZID>::Ptr ply,
+    const pcl::PointCloud<pcl::PointXYZRGB>::Ptr colored)
+{
+    const Eigen::Vector3f red(250.0, 20.0, 20.0);
+    const Eigen::Vector3f yellow(250.0, 200.0, 80.0);
+    const Eigen::Vector3f green(50.0, 250.0, 20.0);
+    const Eigen::Vector3f cyan(25.0, 240.0, 240.0);
+    const Eigen::Vector3f blue(50.0, 50.0, 240.0);
+    const Eigen::Vector3f purple(230.0, 40.0, 210.0);
+    Eigen::Vector3f color;
+    colored->clear();
+
+    for (size_t i = 0; i < ply->points.size(); i++) {
+        pcl::PointXYZRGB point;
+        if (ply->points[i].saliency < 0.76f) {
+            color = red;
+        }
+        else if (ply->points[i].saliency < 0.86f) {
+            color = red + (ply->points[i].saliency - 0.76f) / 0.1f * (yellow - red);
+        }
+        else if (ply->points[i].saliency < 0.9f) {
+            color = yellow + (ply->points[i].saliency - 0.86f) / 0.04f * (green - yellow);
+        }
+        else if (ply->points[i].saliency < 0.95f) {
+            color = green + (ply->points[i].saliency - 0.9f) / 0.05f * (cyan - green);
+        }
+        else if (ply->points[i].saliency < 1.05f) {
+            color = cyan + (ply->points[i].saliency - 0.95f) / 0.1f * (blue - green);
+        }
+        else if (ply->points[i].saliency < 1.15f) {
+            color = blue + (ply->points[i].saliency - 1.05f) / 0.1f * (purple - blue);
+        }
+        else color = purple;
+
+        uint32_t rgb = ((uint32_t)color[0] << 16 | (uint32_t)color[1] << 8 | (uint32_t)color[2]);
+        point.rgb = *reinterpret_cast<float*>(&rgb);
+        point.x = ply->points[i].x;
+        point.y = ply->points[i].y;
+        point.z = ply->points[i].z;
+        colored->push_back(point);
+    }
+}

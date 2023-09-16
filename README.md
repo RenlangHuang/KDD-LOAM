@@ -14,7 +14,31 @@ Follow [PCL Installation](http://www.pointclouds.org/downloads/linux.html).
 
 ### 1.3. **FMT** and **Sophus**
 
+Install FMT, the prerequisite of Sophus:
+```
+    git clone https://github.com/fmtlib/fmt.git
+    cd fmt
+    mkdir build
+    cd build
+    cmake ..
+    make
+    sudo make install
+```
+
+Clone the repository and make:
+
+```
+    git clone https://github.com/strasdat/Sophus.git
+    cd Sophus
+    mkdir build
+    cd build
+    cmake ..
+    make
+    sudo make install
+```
+
 ### 1.4. **TBB**
+
 
 ### 1.5. **Python** and **CUDA**, **CUDNN**
 Python 3 (Python 3.7 is tested, conda is recommended).

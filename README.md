@@ -56,7 +56,7 @@ Clone the repository and catkin_make:
     catkin_make -DPYTHON_EXECUTABLE=/usr/bin/python3
 ```
 
-Compile the C++ extensions to support the neural network:
+Compile the C++ extensions for the neural network:
 ```
     cd ~/kddloam_ws/src/scripts/cpp_extensions
     sh compile_wrappers.sh

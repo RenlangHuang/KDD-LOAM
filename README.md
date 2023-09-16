@@ -16,25 +16,25 @@ Follow [PCL Installation](http://www.pointclouds.org/downloads/linux.html).
 
 Install FMT, the prerequisite of Sophus:
 ```
-    git clone https://github.com/fmtlib/fmt.git
-    cd fmt
-    mkdir build
-    cd build
-    cmake ..
-    make
-    sudo make install
+git clone https://github.com/fmtlib/fmt.git
+cd fmt
+mkdir build
+cd build
+cmake ..
+make
+sudo make install
 ```
 
 Clone the repository and make:
 
 ```
-    git clone https://github.com/strasdat/Sophus.git
-    cd Sophus
-    mkdir build
-    cd build
-    cmake ..
-    make
-    sudo make install
+git clone https://github.com/strasdat/Sophus.git
+cd Sophus
+mkdir build
+cd build
+cmake ..
+make
+sudo make install
 ```
 
 ### 1.4. **TBB**
@@ -49,34 +49,33 @@ requirements (pip installation): numpy, scipy, torch, torchvision, open3d, rospy
 Clone the repository and catkin_make:
 
 ```
-    mkdir -p ~/kddloam_ws/src
-    cd ~/kddloam_ws/src
-    git clone https://github.com/NeSC-IV/KDD-LOAM.git
-    cd ../
-    catkin_make -DPYTHON_EXECUTABLE=/usr/bin/python3
+mkdir -p ~/kddloam_ws/src
+cd ~/kddloam_ws/src
+git clone https://github.com/NeSC-IV/KDD-LOAM.git
+cd ../
+catkin_make -DPYTHON_EXECUTABLE=/usr/bin/python3
 ```
 
 Compile the C++ extensions for the neural network:
 ```
-    cd ~/kddloam_ws/src/scripts/cpp_extensions
-    sh compile_wrappers.sh
-    cd ~/kddloam_ws/TCKDD/cpp_extensions
-    sh compile_wrappers.sh
-    cd ~/kddloam_ws/TCKDD
-    mkdir checkpoints
-    mkdir logs
+cd ~/kddloam_ws/src/scripts/cpp_extensions
+sh compile_wrappers.sh
+cd ~/kddloam_ws/TCKDD/cpp_extensions
+sh compile_wrappers.sh
+cd ~/kddloam_ws/TCKDD
+mkdir checkpoints
+mkdir logs
 ```
 
 ## 3. KITTI Example (Velodyne HDL-64)
-Download [KITTI Odometry dataset](http://www.cvlibs.net/datasets/kitti/eval_odometry.php) to YOUR_DATASET_FOLDER and set the `dataset_folder` and `sequence_number` parameters in `kitti_publisher.launch` file. Note you also convert KITTI dataset to bag file for easy use by setting proper parameters in `kitti_helper.launch`. 
-
+Download [KITTI Odometry dataset](http://www.cvlibs.net/datasets/kitti/eval_odometry.php) to YOUR_DATASET_FOLDER and set the `dataset_folder` and `sequence_number` parameters in `kitti_publisher.launch` file.
 ```
-    source ~/kddloam_ws/devel/setup.bash
-    cd ~/catkin_ws/src/scripts
-    python keypointsDescription.py --num_keypoints 5000
-    python odometry.py --num_keypoints 4500 --multi_threads_mode True
-    rosrun aloam_velodyne kddloam_velodyne_HDL_64.launch
-    roslaunch aloam_velodyne kitti_publisher.launch
+source ~/kddloam_ws/devel/setup.bash
+cd ~/kddloam_ws/src/scripts
+python keypointsDescription.py
+python odometry.py
+roslaunch kddloam_velodyne kddloam.launch
+roslaunch kddloam_velodyne kitti_publisher.launch
 ```
 
 ## 4.Acknowledgements

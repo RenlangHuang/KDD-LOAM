@@ -76,7 +76,6 @@ def saliency_hierarchical_render(points, saliency):
     points.colors = o3d.utility.Vector3dVector(color / 255.)
 
 
-args.sample_index = 59
 start = time.time()
 pair = kitti._pairs[args.sample_index]
 trans = kitti._gt[args.sample_index]

@@ -57,4 +57,9 @@ Download [KITTI Odometry dataset](http://www.cvlibs.net/datasets/kitti/eval_odom
 
 ## 4.Acknowledgements
 Thanks for LOAM(J. Zhang and S. Singh. LOAM: Lidar Odometry and Mapping in Real-time, RSS 2014) and [A-LOAM](https://github.com/HKUST-Aerial-Robotics/A-LOAM).
-Thanks for CT-ICP and KISS-ICP.
+
+Thanks for [CT-ICP](https://github.com/jedeschaud/ct_icp) and [KISS-ICP](https://github.com/PRBonn/kiss-icp).
+
+Thanks for [KPConv](https://github.com/HuguesTHOMAS/KPConv-PyTorch).
+
+If you use this library for any academic work, please cite our original paper.

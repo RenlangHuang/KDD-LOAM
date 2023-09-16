@@ -1,0 +1,27 @@
+<launch>
+    
+    <param name="scan_line" type="int" value="64" />
+
+    <!-- if 1, do mapping 10 Hz, if 2, do mapping 5 Hz. Suggest to use 1, it will adjust frequence automatically -->
+    <param name="mapping_skip_frame" type="int" value="1" />
+
+    <!-- remove too closed points -->
+    <param name="minimum_range" type="double" value="5"/>
+
+    <param name="voxel_size_map" type="double" value="1.0"/>
+    <param name="factor_voxel_size_map_merge" type="double" value="0.5"/>
+    <param name="factor_voxel_size_registration" type="double" value="1.5"/>
+    <param name="max_points_per_voxel" type="int" value="20"/>
+
+    <node pkg="kddloam_velodyne" type="voxelGridSampling" name="voxelGridSampling" output="screen"/>
+    <!--node pkg="kddloam_velodyne" type="local_mapping" name="local_mapping" output="screen" launch-prefix="gdb -ex run args"-->
+    <node pkg="kddloam_velodyne" type="local_mapping" name="local_mapping" output="screen" />
+    <node pkg="kddloam_velodyne" type="global_mapping" name="global_mapping" output="screen" />
+    
+    <arg name="rviz" default="true" />
+    <group if="$(arg rviz)">
+        <!--node launch-prefix="nice" pkg="rviz" type="rviz" name="rviz" args="-d $(find kddloam_velodyne)/rviz_cfg/demo.rviz" -->
+        <node launch-prefix="nice" pkg="rviz" type="rviz" name="rviz" args="-d $(find kddloam_velodyne)/rviz_cfg/kddloam.rviz" />
+    </group>
+
+</launch>

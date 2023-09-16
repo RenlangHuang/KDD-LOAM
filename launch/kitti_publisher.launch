@@ -1,0 +1,15 @@
+<launch>
+
+    <param name="dataset_folder" type="string" value="/media/jacko/SSD/KITTI_data_odometry/" />
+    <param name="save_directory" type="string" value="/home/jacko/kddloam_ws/src/KDD-LOAM/KITTI_odometry_evaluation_tool/tmp/" />
+    <param name="sequence_number" type="string" value="00" />
+    <param name="publish_delay" type="double" value="0.10" />
+    <param name="maximum_range" type="double" value="100.0" />
+    <param name="minimum_range" type="double" value="2.5" />
+    <param name="output_bag_file" type="string" value="~/kddloam_ws/kitti.bag" />
+    <param name="to_bag" type="bool" value="false" />
+    
+    <node pkg="kddloam_velodyne" type="kittiPublisher" name="kittiPublisher" output="screen" />
+    <!-- node pkg="kddloam_velodyne" type="savePath" name="savePath" output="screen" -->
+
+</launch>

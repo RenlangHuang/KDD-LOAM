@@ -1,0 +1,9 @@
+<launch>
+    <node pkg="kddloam_velodyne" type="laserRender" name="laserRender" output="screen"/>
+    
+    <arg name="rviz" default="true" />
+    <group if="$(arg rviz)">
+        <node launch-prefix="nice" pkg="rviz" type="rviz" name="rviz2" args="-d $(find kddloam_velodyne)/rviz_cfg/scan.rviz" />
+    </group>
+
+</launch>

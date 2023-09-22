@@ -1,6 +1,44 @@
 # KDD-LOAM
-KDD-LOAM: Jointly Learned Keypoint Detector and Descriptors Assisted LiDAR Odometry and Mapping 
+KDD-LOAM: Jointly Learned Keypoint Detector and Descriptors Assisted LiDAR Odometry and Mapping
 
+## Installation
+
+Please use the following command for installation.
+
+```bash
+# It is recommended to create a new environment
+conda create -n geotransformer python==3.8
+conda activate geotransformer
+
+# [Optional] If you are using CUDA 11.0 or newer, please install `torch==1.7.1+cu110`
+pip install torch==1.7.1+cu110 -f https://download.pytorch.org/whl/torch_stable.html
+
+# Install packages and other dependencies
+pip install -r requirements.txt
+python setup.py build develop
+```
+
+Code has been tested with Ubuntu 20.04, GCC 9.3.0, Python 3.8, PyTorch 1.7.1, CUDA 11.1 and cuDNN 8.1.0.
+
+## Pre-trained Weights
+
+We provide pre-trained weights in the [release](https://github.com/qinzheng93/GeoTransformer/releases) page. Please download the latest weights and put them in `weights` directory.
+
+## 3DMatch
+
+### Data preparation
+
+The dataset can be downloaded from [PREDATOR](https://github.com/prs-eth/OverlapPredator). The data should be organized as follows:
+
+```text
+--data--3DMatch--metadata
+              |--data--train--7-scenes-chess--cloud_bin_0.pth
+                    |      |               |--...
+                    |      |--...
+                    |--test--7-scenes-redkitchen--cloud_bin_0.pth
+                          |                    |--...
+                          |--...
+```
 
 ## 1. Prerequisites
 ### 1.1 **Ubuntu** and **ROS**

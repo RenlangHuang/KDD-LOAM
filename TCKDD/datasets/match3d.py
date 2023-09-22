@@ -8,11 +8,11 @@ from scipy.spatial.transform import Rotation as R
 
 
 #path = os.path.dirname(os.path.abspath(__file__))
-DATA_PATH = '/media/jacko/SSD/' #'F:/' #'/remote-home/share/ums_huangrenlang/'
-match3d_path = DATA_PATH + '3dmatch_predator/metadata/3DMatch/'
-lomatch3d_path = DATA_PATH + '3dmatch_predator/metadata/3DLoMatch/'
-match3d_train_path = DATA_PATH + '3dmatch_predator/data/train/'
-match3d_test_path = DATA_PATH + '3dmatch_predator/data/test/'
+DATA_PATH = 'YOUR_DATA_PATH'
+match3d_path = DATA_PATH + '3dmatch/metadata/3DMatch/'
+lomatch3d_path = DATA_PATH + '3dmatch/metadata/3DLoMatch/'
+match3d_train_path = DATA_PATH + '3dmatch/data/train/'
+match3d_test_path = DATA_PATH + '3dmatch/data/test/'
 
 
 class ThreeDMatchTrainDataset(Dataset):

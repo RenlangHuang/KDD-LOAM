@@ -2,58 +2,6 @@
 KDD-LOAM: Jointly Learned Keypoint Detector and Descriptors Assisted LiDAR Odometry and Mapping
 
 ## Installation
-
-Please use the following command for installation.
-
-```bash
-# [Optional] If you are using CUDA 11.0 or newer, please install `torch==1.7.1+cu110`
-pip install numpy
-pip install scipy
-pip install rospy
-pip install open3d==0.17.0
-pip install torch==1.7.1+cu110 -f https://download.pytorch.org/whl/torch_stable.html
-pip install torchvision
-```
-
-Code has been tested with Ubuntu 20.04, GCC 9.3.0, Python 3.8, PyTorch 1.7.1, CUDA 11.1 and cuDNN 8.1.0.
-
-## Pre-trained Weights
-
-We provide pre-trained weights in the [release](https://github.com/qinzheng93/GeoTransformer/releases) page. Please download the latest weights and put them in `weights` directory.
-
-## 3DMatch
-
-### Data preparation
-
-The dataset can be downloaded from [PREDATOR](https://github.com/prs-eth/OverlapPredator). The data should be organized as follows:
-
-```text
---data--3DMatch--metadata
-              |--data--train--7-scenes-chess--cloud_bin_0.pth
-                    |      |               |--...
-                    |      |--...
-                    |--test--7-scenes-redkitchen--cloud_bin_0.pth
-                          |                    |--...
-                          |--...
-```
-
-## Kitti odometry
-
-### Data preparation
-
-Download the data from the [Kitti official website](http://www.cvlibs.net/datasets/kitti/eval_odometry.php) into `data/Kitti` and run `data/Kitti/downsample_pcd.py` to generate the data. The data should be organized as follows:
-
-```text
---data--Kitti--metadata
-            |--sequences--00--velodyne--000000.bin
-            |              |         |--...
-            |              |...
-            |--downsampled--00--000000.npy
-                         |   |--...
-                         |--...
-```
-
-## 1. Prerequisites
 ### 1.1 **Ubuntu** and **ROS**
 Ubuntu 64-bit 16.04 or 18.04 or 20.04 (tested).
 
@@ -90,11 +38,12 @@ sudo make install
 
 ### 1.4. **TBB**
 
-
 ### 1.5. **Python** and **CUDA**, **CUDNN**
 Python 3 (Python 3.7 is tested, conda is recommended).
 
 requirements (pip installation): numpy, scipy, torch, torchvision, open3d, rospy
+
+Code has been tested with Ubuntu 20.04, GCC 9.3.0, Python 3.7, PyTorch 1.7.1, CUDA 11.1 and cuDNN 8.1.0.
 
 ## 2. Build KDD-LOAM
 Clone the repository and catkin_make:
@@ -116,6 +65,42 @@ sh compile_wrappers.sh
 cd ~/kddloam_ws/TCKDD
 mkdir checkpoints
 mkdir logs
+```
+
+## Pre-trained Weights
+
+We provide pre-trained weights in the [release](https://github.com/qinzheng93/GeoTransformer/releases) page. Please download the latest weights and put them in `weights` directory.
+
+## 3DMatch
+
+### Data preparation
+
+The dataset can be downloaded from [PREDATOR](https://github.com/prs-eth/OverlapPredator). The data should be organized as follows:
+
+```text
+--data--3DMatch--metadata
+              |--data--train--7-scenes-chess--cloud_bin_0.pth
+                    |      |               |--...
+                    |      |--...
+                    |--test--7-scenes-redkitchen--cloud_bin_0.pth
+                          |                    |--...
+                          |--...
+```
+
+## Kitti odometry
+
+### Data preparation
+
+Download the data from the [Kitti official website](http://www.cvlibs.net/datasets/kitti/eval_odometry.php) into `data/Kitti` and run `data/Kitti/downsample_pcd.py` to generate the data. The data should be organized as follows:
+
+```text
+--data--Kitti--metadata
+            |--sequences--00--velodyne--000000.bin
+            |              |         |--...
+            |              |...
+            |--downsampled--00--000000.npy
+                         |   |--...
+                         |--...
 ```
 
 ## 3. KITTI Example (Velodyne HDL-64)

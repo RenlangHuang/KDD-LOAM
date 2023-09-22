@@ -1,8 +1,8 @@
 # KDD-LOAM
 KDD-LOAM: Jointly Learned Keypoint Detector and Descriptors Assisted LiDAR Odometry and Mapping
 
-## Installation
-### 1.1 **Ubuntu** and **ROS**
+## 1. Installation
+### 1.1. **Ubuntu** and **ROS**
 Ubuntu 64-bit 16.04 or 18.04 or 20.04 (tested).
 
 ROS Kinetic or Melodic or Noetic (tested). [ROS Installation](http://wiki.ros.org/ROS/Installation)
@@ -67,13 +67,13 @@ mkdir checkpoints
 mkdir logs
 ```
 
-## Pre-trained Weights
+### Pre-trained Weights
 
 We provide pre-trained weights in the [release](https://github.com/qinzheng93/GeoTransformer/releases) page. Please download the latest weights and put them in `weights` directory.
 
-## 3DMatch
+## 3. Datasets Preparation
 
-### Data preparation
+### 3.1. 3DMatch
 
 The dataset can be downloaded from [PREDATOR](https://github.com/prs-eth/OverlapPredator). The data should be organized as follows:
 
@@ -87,11 +87,9 @@ The dataset can be downloaded from [PREDATOR](https://github.com/prs-eth/Overlap
                           |--...
 ```
 
-## Kitti odometry
+### 3.2. KITTI odometry
 
-### Data preparation
-
-Download the data from the [Kitti official website](http://www.cvlibs.net/datasets/kitti/eval_odometry.php) into `data/Kitti` and run `data/Kitti/downsample_pcd.py` to generate the data. The data should be organized as follows:
+Download the data from the [Kitti official website](http://www.cvlibs.net/datasets/kitti/eval_odometry.php) into `data/Kitti`. The data should be organized as follows:
 
 ```text
 --data--Kitti--metadata
@@ -102,8 +100,9 @@ Download the data from the [Kitti official website](http://www.cvlibs.net/datase
                          |   |--...
                          |--...
 ```
+## 4. Training, Evaluation, and Inference
 
-## 3. KITTI Example (Velodyne HDL-64)
+## 5. Odometry and Mapping: KITTI Example (Velodyne HDL-64)
 Download [KITTI Odometry dataset](http://www.cvlibs.net/datasets/kitti/eval_odometry.php) to YOUR_DATASET_FOLDER and set the `dataset_folder` and `sequence_number` parameters in `kitti_publisher.launch` file.
 ```
 source ~/kddloam_ws/devel/setup.bash

@@ -38,6 +38,8 @@ sudo make install
 
 ### 1.4. **TBB**
 
+Follow [oneTBB installation](https://github.com/oneapi-src/oneTBB/blob/master/INSTALL.md).
+
 ### 1.5. **Python** and **CUDA**, **CUDNN**
 Python 3 (Python 3.7 is tested, conda is recommended).
 

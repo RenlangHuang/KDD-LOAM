@@ -87,9 +87,9 @@ The dataset can be downloaded from [PREDATOR](https://github.com/prs-eth/Overlap
                            |--...
 ```
 
-### 3.2. KITTI odometry
+### 3.2. KITTI Odometry
 
-Download the data from the [Kitti official website](http://www.cvlibs.net/datasets/kitti/eval_odometry.php) to `YOUR_DATA_PATH`, which you are supposed to modify in `/TCKDD/datasets/kitti.py`. The data should be organized as follows:
+Download the data from the [KITTI official website](http://www.cvlibs.net/datasets/kitti/eval_odometry.php) to `YOUR_DATA_PATH`, which you are supposed to modify in `/TCKDD/datasets/kitti.py`. The data should be organized as follows:
 
 ```text
 --YOUR_DATA_PATH--Kitti--metadata

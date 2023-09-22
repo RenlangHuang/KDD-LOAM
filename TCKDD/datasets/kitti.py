@@ -5,7 +5,7 @@ import torch
 from scipy.spatial.transform import Rotation as R
 
 
-DATA_PATH = '/media/jacko/SSD/'
+DATA_PATH = 'YOUR_DATA_PATH'
 KITTI_path = DATA_PATH + 'KITTI_data_odometry/'
 #path = os.path.dirname(os.path.abspath(__file__))
 

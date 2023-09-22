@@ -37,6 +37,22 @@ The dataset can be downloaded from [PREDATOR](https://github.com/prs-eth/Overlap
                           |--...
 ```
 
+## Kitti odometry
+
+### Data preparation
+
+Download the data from the [Kitti official website](http://www.cvlibs.net/datasets/kitti/eval_odometry.php) into `data/Kitti` and run `data/Kitti/downsample_pcd.py` to generate the data. The data should be organized as follows:
+
+```text
+--data--Kitti--metadata
+            |--sequences--00--velodyne--000000.bin
+            |              |         |--...
+            |              |...
+            |--downsampled--00--000000.npy
+                         |   |--...
+                         |--...
+```
+
 ## 1. Prerequisites
 ### 1.1 **Ubuntu** and **ROS**
 Ubuntu 64-bit 16.04 or 18.04 or 20.04 (tested).

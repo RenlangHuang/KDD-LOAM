@@ -117,4 +117,4 @@ Thanks for [CT-ICP](https://github.com/jedeschaud/ct_icp) and [KISS-ICP](https:/
 
 Thanks for [KPConv](https://github.com/HuguesTHOMAS/KPConv-PyTorch).
 
-If you use this library for any academic work, please cite our original paper.
+If you use this library for any academic work, please cite our original paper [KDD-LOAM](http://arxiv.org/abs/2309.15394) (under review, ICRA 2024).

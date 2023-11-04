@@ -129,9 +129,7 @@ To detect the 3D keypoints of a point cloud and register it to a reference point
 python inference_3dmatch.py --keypoint_detector nms --num_keypoints 500 --sample_index 1000 --model_path ./checkpoints/3dmatch_kpfcnn_HCL64_40000.pth
 ```
 <center>
-  <img src=figures/prob.png width=30%>
-  <img src=figures/nms.png width=30%>
-  <img src=figures/nms-prob.png width=30%>
+  <img src=figures/prob.png width=30%><img src=figures/nms.png width=30%><img src=figures/nms-prob.png width=30%>
 </center>
 
 To train a model on the outdoor KITTI dataset, please run:
@@ -153,7 +151,7 @@ To detect the 3D keypoints of a point cloud and register it to a reference point
 python inference_kitti.py --num_keypoints 5000 --sample_index 59 --model_path ./checkpoints/kitti_HCL64_augm_23500.pth
 ```
 <center>
-  <img src=figures/kitti.png>
+  <img src=figures/kitti.png width=80%>
 </center>
 
 ## 5. Odometry and Mapping: KITTI Example (Velodyne HDL-64)

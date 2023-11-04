@@ -3,9 +3,9 @@ This repository represents the official implementation of the paper:
 
 ### [KDD-LOAM: Jointly Learned Keypoint Detector and Descriptors Assisted LiDAR Odometry and Mapping](https://arxiv.org/abs/2309.15394) (ICRA 2024, under review)
 
-[Renlang Huang], [Minglei Zhao], [Jiming Chen], [Liang Li]
+[Renlang Huang](https://github.com/RenlangHuang), [Minglei Zhao](https://github.com/2019lelexia), [Jiming Chen], [Liang Li](https://github.com/liangli1990)
 
-![Predator_teaser](assets/teaser_predator.jpg?raw=true)
+![Saliency-aware local map rendering.](figures/local_map.png)
 
 ## 1. Installation
 ### 1.1. **Ubuntu** and **ROS**
@@ -159,11 +159,16 @@ roslaunch kddloam_velodyne kddloam.launch
 roslaunch kddloam_velodyne kitti_publisher.launch
 ```
 
-## 4.Acknowledgements
-Thanks for LOAM(J. Zhang and S. Singh. LOAM: Lidar Odometry and Mapping in Real-time, RSS 2014) and [A-LOAM](https://github.com/HKUST-Aerial-Robotics/A-LOAM).
-
-Thanks for [CT-ICP](https://github.com/jedeschaud/ct_icp) and [KISS-ICP](https://github.com/PRBonn/kiss-icp).
-
-Thanks for [KPConv](https://github.com/HuguesTHOMAS/KPConv-PyTorch).
-
+### Citation
 If you use this library for any academic work, please cite our original paper [KDD-LOAM](http://arxiv.org/abs/2309.15394) (under review, ICRA 2024).
+
+### Acknowledgments
+In this project we use (parts of) the official implementations of the followin works: 
+
+- [KPConv]([https://github.com/chrischoy/FCGF](https://github.com/HuguesTHOMAS/KPConv-PyTorch)) (backbone)
+- [D3Feat](https://github.com/XuyangBai/D3Feat.pytorch) (data preprocessing)
+- [CT-ICP](https://github.com/jedeschaud/ct_icp) (voxel hash map implementation)
+- [KISS-ICP](https://github.com/PRBonn/kiss-icp) (motion compensation, data association, robust registration)
+- [A-LOAM](https://github.com/HKUST-Aerial-Robotics/A-LOAM) (TCKDD-LOAM)
+
+ We thank the respective authors for open sourcing their methods. We would also like to thank reviewers, especially reviewer 2 for his/her valuable inputs. 

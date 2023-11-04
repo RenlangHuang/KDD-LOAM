@@ -12,12 +12,13 @@ from utils.selection import *
 paser = argparse.ArgumentParser()
 paser.add_argument("--keypoint_detector", type=str, default="rand", choices=["rand","prob","nms","nmsp"])
 paser.add_argument("--num_keypoints", type=int, default=5000)
+paser.add_argument("--model_path", type=str, default="./checkpoints/3dmatch_kpfcnn_HCL64_40000.pth")
 args = paser.parse_args()
 
 
 neighbor_limits = [37, 31, 34, 37, 35]
 model = KPFCNN(1, 32, 64, 15, 0.075, 0.06, 'group_norm', 32)
-model.load_state_dict(torch.load('./checkpoints/3dmatch_kpfcnn_HCL64_40000.pth'))
+model.load_state_dict(torch.load(args.model_path))
 model.eval().cuda()
 
 indoor = ThreeDMatchTestDataset(False)

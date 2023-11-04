@@ -1,5 +1,11 @@
-# KDD-LOAM
-KDD-LOAM: Jointly Learned Keypoint Detector and Descriptors Assisted LiDAR Odometry and Mapping
+# KDD-LOAM: Jointly Learned Keypoint Detector and Descriptors Assisted LiDAR Odometry and Mapping
+This repository represents the official implementation of the paper:
+
+### [KDD-LOAM: Jointly Learned Keypoint Detector and Descriptors Assisted LiDAR Odometry and Mapping](https://arxiv.org/abs/2309.15394)
+
+[Renlang Huang], [Minglei Zhao], [Jiming Chen], [Liang Li]
+
+![Predator_teaser](assets/teaser_predator.jpg?raw=true)
 
 ## 1. Installation
 ### 1.1. **Ubuntu** and **ROS**

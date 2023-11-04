@@ -166,7 +166,7 @@ python inference_kitti.py --num_keypoints 5000 --sample_index 59 --model_path ./
 </div>
 
 ## 5. Odometry and Mapping: KITTI Example (Velodyne HDL-64)
-Download [KITTI Odometry dataset](http://www.cvlibs.net/datasets/kitti/eval_odometry.php) to YOUR_DATASET_FOLDER and set the `dataset_folder` and `sequence_number` parameters in `kitti_publisher.launch` file.
+Download [KITTI Odometry dataset](http://www.cvlibs.net/datasets/kitti/eval_odometry.php) to YOUR_DATA_PATH and set the `dataset_folder` and `sequence_number` parameters in `kitti_publisher.launch` file.
 ```
 source ~/kddloam_ws/devel/setup.bash
 cd ~/kddloam_ws/src/scripts

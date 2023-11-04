@@ -15,12 +15,13 @@ parser = argparse.ArgumentParser()
 parser.add_argument("--keypoint_detector", type=str, default="prob", choices=["rand","prob","nms","nmsp"])
 parser.add_argument("--num_keypoints", type=int, default=250)
 parser.add_argument("--sample_index", type=int, default=20)
+parser.add_argument("--model_path", type=str, default="./checkpoints/3dmatch_kpfcnn_HCL64_40000.pth")
 args = parser.parse_args()
 
 
 neighbor_limits = [37, 31, 34, 37, 35]
 model = KPFCNN(1, 32, 64, 15, 0.075, 0.06, 'group_norm', 32)
-model.load_state_dict(torch.load('./checkpoints/3dmatch_kpfcnn_HCL64_40000.pth'))
+model.load_state_dict(torch.load(args.model_path))
 model.eval().cuda()
 
 indoor = ThreeDMatchTrainDataset()

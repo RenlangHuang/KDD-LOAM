@@ -5,7 +5,9 @@ This repository represents the official implementation of the paper:
 
 [Renlang Huang](https://github.com/RenlangHuang), [Minglei Zhao](https://github.com/2019lelexia), Jiming Chen, [Liang Li](https://github.com/liangli1990) | Zhejiang University
 
-![Saliency-aware local map rendering.](figures/local_map.png)
+<div align="center">
+  <img src=figures/local_map.png width=80%/>
+</div>
 
 ## 1. Installation
 ### 1.1. **Ubuntu** and **ROS**
@@ -128,13 +130,18 @@ To detect the 3D keypoints of a point cloud and register it to a reference point
 ```
 python inference_3dmatch.py --keypoint_detector nms --num_keypoints 500 --sample_index 1000 --model_path ./checkpoints/3dmatch_kpfcnn_HCL64_40000.pth
 ```
-<center>
-  <figure>
-    <img src=figures/prob.png width=30%/>
-    <img src=figures/nms.png width=30%/>
-    <img src=figures/nms-prob.png width=30%/>
-  </figure>
-</center>
+Here are some examples of point clouds rendered according to the predicted saliency uncertainty (saliency descends by red->green->blue->purple, i.e., red regions are salient):
+<div align="center">
+  <img src=figures/prob.png width=31%/><img src=figures/nms.png width=32%/><img src=figures/nms-prob.png width=31%/>
+</div>
+<div align="center">
+  <font>(a) probabilistic keypoint detector&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font>
+  <font>(b) NMS keypoint detector&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font>
+  <font>(c) probabilistic NMS keypoint detector</font>
+</div>
+<div align="center">
+  <img src=figures/indoor-1.png width=31%/><img src=figures/indoor-2.png width=31%/><img src=figures/indoor-3.png width=31%/>
+</div>
 
 To train a model on the outdoor KITTI dataset, please run:
 ```
@@ -154,9 +161,9 @@ To detect the 3D keypoints of a point cloud and register it to a reference point
 ```
 python inference_kitti.py --num_keypoints 5000 --sample_index 59 --model_path ./checkpoints/kitti_HCL64_augm_23500.pth
 ```
-<center>
+<div align="center">
   <img src=figures/kitti.png width=50%/>
-</center>
+</div>
 
 ## 5. Odometry and Mapping: KITTI Example (Velodyne HDL-64)
 Download [KITTI Odometry dataset](http://www.cvlibs.net/datasets/kitti/eval_odometry.php) to YOUR_DATASET_FOLDER and set the `dataset_folder` and `sequence_number` parameters in `kitti_publisher.launch` file.
@@ -173,12 +180,13 @@ roslaunch kddloam_velodyne kitti_publisher.launch
 If you use this library for any academic work, please cite our original paper [KDD-LOAM](http://arxiv.org/abs/2309.15394) (under review, ICRA 2024).
 
 ### Acknowledgments
-In this project we use (parts of) the official implementations of the followin works: 
+In this project we use (parts of) the official implementations of the following works: 
 
-- [KPConv]([https://github.com/chrischoy/FCGF](https://github.com/HuguesTHOMAS/KPConv-PyTorch)) (backbone)
+- [KPConv](https://github.com/HuguesTHOMAS/KPConv-PyTorch) (backbone)
 - [D3Feat](https://github.com/XuyangBai/D3Feat.pytorch) (data preprocessing)
+- [PREDATOR](https://github.com/prs-eth/OverlapPredator) (dataset management)
 - [CT-ICP](https://github.com/jedeschaud/ct_icp) (voxel hash map implementation)
 - [KISS-ICP](https://github.com/PRBonn/kiss-icp) (motion compensation, data association, robust registration)
-- [A-LOAM](https://github.com/HKUST-Aerial-Robotics/A-LOAM) (TCKDD-LOAM)
+- [A-LOAM](https://github.com/HKUST-Aerial-Robotics/A-LOAM) (kitti publisher, scan-to-scan and scan-to-map pipeline)
 
- We thank the respective authors for open sourcing their methods. We would also like to thank reviewers, especially reviewer 2 for his/her valuable inputs. 
+We thank the respective authors for open sourcing their methods. We would also like to thank reviewers.

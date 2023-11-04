@@ -1,9 +1,9 @@
-# KDD-LOAM: Jointly Learned Keypoint Detector and Descriptors Assisted LiDAR Odometry and Mapping
+## KDD-LOAM: Jointly Learned Keypoint Detector and Descriptors Assisted LiDAR Odometry and Mapping
 This repository represents the official implementation of the paper:
 
-### [KDD-LOAM: Jointly Learned Keypoint Detector and Descriptors Assisted LiDAR Odometry and Mapping](https://arxiv.org/abs/2309.15394) (ICRA 2024, under review)
+#### [KDD-LOAM: Jointly Learned Keypoint Detector and Descriptors Assisted LiDAR Odometry and Mapping](https://arxiv.org/abs/2309.15394) (ICRA 2024, under review)
 
-[Renlang Huang](https://github.com/RenlangHuang), [Minglei Zhao](https://github.com/2019lelexia), [Jiming Chen], [Liang Li](https://github.com/liangli1990)
+[Renlang Huang](https://github.com/RenlangHuang), [Minglei Zhao](https://github.com/2019lelexia), Jiming Chen, [Liang Li](https://github.com/liangli1990)
 
 ![Saliency-aware local map rendering.](figures/local_map.png)
 
@@ -128,6 +128,11 @@ To detect the 3D keypoints of a point cloud and register it to a reference point
 ```
 python inference_3dmatch.py --keypoint_detector nms --num_keypoints 500 --sample_index 1000 --model_path ./checkpoints/3dmatch_kpfcnn_HCL64_40000.pth
 ```
+<center>
+  <img src=figures/prob.png>
+  <img src=figures/nms.png>
+  <img src=figures/nms-prob.png>
+</center>
 
 To train a model on the outdoor KITTI dataset, please run:
 ```
@@ -137,11 +142,11 @@ python train_kitti.py
 To evaluate a model on the KITTI dataset, please run:
 ```
 cd TCKDD
-python evaluate_3dmatch.py
+python evaluate_kitti.py
 ```
 And you can evaluate various types of keypoint detectors with different number of keypoints of a specified model:
 ```
-python evaluate_3dmatch.py --keypoint_detector prob --num_keypoints 500 --model_path ./checkpoints/3dmatch_kpfcnn_HCL64_40000.pth
+python evaluate_kitti.py --keypoint_detector prob --num_keypoints 5000
 ```
 To detect the 3D keypoints of a point cloud and register it to a reference point cloud via feature matching, you can refer to `inference_3dmatch.py` as an example:
 ```

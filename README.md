@@ -3,7 +3,7 @@ This repository represents the official implementation of the paper:
 
 #### [KDD-LOAM: Jointly Learned Keypoint Detector and Descriptors Assisted LiDAR Odometry and Mapping](https://arxiv.org/abs/2309.15394) (ICRA 2024, under review)
 
-[Renlang Huang](https://github.com/RenlangHuang), [Minglei Zhao](https://github.com/2019lelexia), Jiming Chen, [Liang Li](https://github.com/liangli1990)
+[Renlang Huang](https://github.com/RenlangHuang), [Minglei Zhao](https://github.com/2019lelexia), Jiming Chen, [Liang Li](https://github.com/liangli1990) | Zhejiang University
 
 ![Saliency-aware local map rendering.](figures/local_map.png)
 
@@ -129,7 +129,11 @@ To detect the 3D keypoints of a point cloud and register it to a reference point
 python inference_3dmatch.py --keypoint_detector nms --num_keypoints 500 --sample_index 1000 --model_path ./checkpoints/3dmatch_kpfcnn_HCL64_40000.pth
 ```
 <center>
-  <img src=figures/prob.png width=30%><img src=figures/nms.png width=30%><img src=figures/nms-prob.png width=30%>
+  <figure>
+    <img src=figures/prob.png width=30%/>
+    <img src=figures/nms.png width=30%/>
+    <img src=figures/nms-prob.png width=30%/>
+  </figure>
 </center>
 
 To train a model on the outdoor KITTI dataset, please run:
@@ -151,7 +155,7 @@ To detect the 3D keypoints of a point cloud and register it to a reference point
 python inference_kitti.py --num_keypoints 5000 --sample_index 59 --model_path ./checkpoints/kitti_HCL64_augm_23500.pth
 ```
 <center>
-  <img src=figures/kitti.png width=80%>
+  <img src=figures/kitti.png width=50%/>
 </center>
 
 ## 5. Odometry and Mapping: KITTI Example (Velodyne HDL-64)

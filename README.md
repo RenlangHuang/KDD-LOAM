@@ -166,13 +166,14 @@ python inference_kitti.py --num_keypoints 5000 --sample_index 59 --model_path ./
 </div>
 
 ## 5. Odometry and Mapping: KITTI Example (Velodyne HDL-64)
-Download [KITTI Odometry dataset](http://www.cvlibs.net/datasets/kitti/eval_odometry.php) to `YOUR_DATA_PATH` and set the `dataset_folder` and `sequence_number` parameters in `kitti_publisher.launch` file. You can start the LiDAR odometry and mapping by running the following commands in different terminals to launch the corresponding groups of ROS nodes.
+Download [KITTI odometry dataset](http://www.cvlibs.net/datasets/kitti/eval_odometry.php) to `YOUR_DATA_PATH` and set the `dataset_folder` and `sequence_number` parameters in `kitti_publisher.launch` file. You can start the LiDAR odometry and mapping by running the following commands in different terminals to launch the corresponding groups of ROS nodes.
 ```
 python keypointsDescription.py
 python odometry.py
 roslaunch kddloam_velodyne kddloam.launch
 roslaunch kddloam_velodyne kitti_publisher.launch
 ```
+
 Meanwhile, you can launch the `savePath` roscpp node (refer to `kitti_publisher.launch`) to record the localization results to a txt file, then you can evaluate the relative pose errors through the official [KITTI odometry evaluation tools](https://github.com/LeoQLi/KITTI_odometry_evaluation_tool) after synchronizing the localization results and the ground-truth poses. Note that the performance reported in our paper is evaluated on the premise that no LiDAR frames are discarded during system operation.
 
 ### Citation

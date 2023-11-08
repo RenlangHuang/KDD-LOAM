@@ -1,6 +1,6 @@
 <launch>
 
-    <param name="dataset_folder" type="string" value="YOUR_DATA_PATH/KITTI_data_odometry" />
+    <param name="dataset_folder" type="string" value="YOUR_DATA_PATH/KITTI_data_odometry/" />
     <param name="save_directory" type="string" value="~/kddloam_ws/src/KDD-LOAM/" />
     <param name="sequence_number" type="string" value="00" />
     <param name="publish_delay" type="double" value="0.10" />

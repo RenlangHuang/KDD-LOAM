@@ -79,7 +79,7 @@ mkdir logs
 
 ### Pre-trained Weights
 
-We provide pre-trained weights in the [release](https://github.com/NeSC-IV/KDD-LOAM/releases/tag/KITTI_KPFCN) page. Please download the latest weights and put them in the `checkpoints` directory.
+We provide pre-trained weights in the [release](https://github.com/NeSC-IV/KDD-LOAM/releases/tag/KITTI_KPFCNN) page. Please download the latest weights and put them in the `checkpoints` directory.
 
 ## 3. Datasets Preparation
 

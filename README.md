@@ -166,10 +166,8 @@ python inference_kitti.py --num_keypoints 5000 --sample_index 59 --model_path ./
 </div>
 
 ## 5. Odometry and Mapping: KITTI Example (Velodyne HDL-64)
-Download [KITTI Odometry dataset](http://www.cvlibs.net/datasets/kitti/eval_odometry.php) to `YOUR_DATA_PATH` and set the `dataset_folder` and `sequence_number` parameters in `kitti_publisher.launch` file.
+Download [KITTI Odometry dataset](http://www.cvlibs.net/datasets/kitti/eval_odometry.php) to `YOUR_DATA_PATH` and set the `dataset_folder` and `sequence_number` parameters in `kitti_publisher.launch` file. You can start the LiDAR odometry and mapping by running the following commands in different terminals to launch the corresponding groups of ROS nodes.
 ```
-source ~/kddloam_ws/devel/setup.bash
-cd ~/kddloam_ws/src/KDD-LOAM/scripts
 python keypointsDescription.py
 python odometry.py
 roslaunch kddloam_velodyne kddloam.launch

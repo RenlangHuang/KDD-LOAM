@@ -169,7 +169,7 @@ python inference_kitti.py --num_keypoints 5000 --sample_index 59 --model_path ./
 Download [KITTI Odometry dataset](http://www.cvlibs.net/datasets/kitti/eval_odometry.php) to `YOUR_DATA_PATH` and set the `dataset_folder` and `sequence_number` parameters in `kitti_publisher.launch` file.
 ```
 source ~/kddloam_ws/devel/setup.bash
-cd ~/kddloam_ws/src/scripts
+cd ~/kddloam_ws/src/KDD-LOAM/scripts
 python keypointsDescription.py
 python odometry.py
 roslaunch kddloam_velodyne kddloam.launch

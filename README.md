@@ -173,6 +173,7 @@ python odometry.py
 roslaunch kddloam_velodyne kddloam.launch
 roslaunch kddloam_velodyne kitti_publisher.launch
 ```
+Meanwhile, you can launch the `savePath` roscpp node (refer to `kitti_publisher.launch`) to record the localization results to a txt file, then you can evaluate the relative pose errors through the official [KITTI odometry evaluation tools](https://github.com/LeoQLi/KITTI_odometry_evaluation_tool) after synchronizing the localization results and the ground-truth poses. Note that the performance reported in our paper is evaluated on the premise that no LiDAR frames are discarded during system operation.
 
 ### Citation
 If you use this library for any academic work, please cite our original paper [KDD-LOAM](http://arxiv.org/abs/2309.15394) (under review, ICRA 2024).

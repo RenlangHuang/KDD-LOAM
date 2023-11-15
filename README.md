@@ -33,8 +33,7 @@ sudo apt-get install libxmu-dev libxi-dev -y
 sudo apt-get install mono-complete -y
 sudo apt-get install openjdk-8-jdk openjdk-8-jre -y
 ```           
-* Then visit [PCL Docs](https://pcl.readthedocs.io/projects/tutorials/en/latest/compiling_pcl_posix.html) to build and install PCL.
-Follow [PCL Installation](http://www.pointclouds.org/downloads/linux.html). PCL 1.12.0 has been tested.
+* Then follow [PCL Installation](http://www.pointclouds.org/downloads/linux.html). PCL 1.12.0 has been tested.
 
 ### 1.3. **FMT** and **Sophus**
 

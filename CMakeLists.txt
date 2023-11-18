@@ -24,6 +24,7 @@ find_package(catkin REQUIRED COMPONENTS
 find_package(PCL REQUIRED)
 #find_package(OpenCV REQUIRED)
 #find_package(Ceres REQUIRED)
+find_package(TBB REQUIRED)
 find_package(Sophus REQUIRED)
 find_package(fmt REQUIRED)
 set(FMT_LIBRARIES fmt::fmt)

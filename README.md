@@ -86,9 +86,9 @@ Compile the C++ extensions for the neural network:
 ```
 cd ~/kddloam_ws/src/scripts/cpp_extensions
 sh compile_wrappers.sh
-cd ~/kddloam_ws/TCKDD/cpp_extensions
+cd ~/kddloam_ws/src/TCKDD/cpp_extensions
 sh compile_wrappers.sh
-cd ~/kddloam_ws/TCKDD
+cd ~/kddloam_ws/src/TCKDD
 mkdir checkpoints
 mkdir logs
 ```

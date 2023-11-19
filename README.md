@@ -204,5 +204,6 @@ In this project we use (parts of) the official implementations of the following 
 - [CT-ICP](https://github.com/jedeschaud/ct_icp) (voxel hash map implementation)
 - [KISS-ICP](https://github.com/PRBonn/kiss-icp) (motion compensation, data association, robust registration)
 - [A-LOAM](https://github.com/HKUST-Aerial-Robotics/A-LOAM) (kitti publisher, scan-to-scan and scan-to-map pipeline)
+- [tsl robin-map library](https://github.com/Tessil/robin-map) (from which the `include/tsl` is forked directly)
 
 We thank the respective authors for open sourcing their methods. We would also like to thank reviewers.

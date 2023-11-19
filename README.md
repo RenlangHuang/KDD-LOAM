@@ -151,8 +151,8 @@ Here are some examples of point clouds rendered according to the predicted salie
   <img src=figures/prob.png width=31%/><img src=figures/nms.png width=32%/><img src=figures/nms-prob.png width=31%/>
 </div>
 <div align="center">
-  <font>(a) probabilistic keypoint detector&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font>
-  <font>(b) NMS keypoint detector&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font>
+  <font>(a) probabilistic keypoint detector&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font>
+  <font>(b) NMS keypoint detector&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font>
   <font>(c) probabilistic NMS keypoint detector</font>
 </div>
 <div align="center">

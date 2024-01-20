@@ -89,7 +89,7 @@ sh compile_wrappers.sh
 cd ~/kddloam_ws/src/TCKDD/cpp_extensions
 sh compile_wrappers.sh
 cd ~/kddloam_ws/src/TCKDD
-mkdir checkpoints
+mkdir ckpt
 mkdir logs
 ```
 

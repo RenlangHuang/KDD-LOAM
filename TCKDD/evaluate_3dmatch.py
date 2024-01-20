@@ -1,18 +1,18 @@
 import time
 import argparse
-from metrics import Metrics
+from engine.metrics import Metrics
 import torch
 import numpy as np
 from models.kpfcnn import KPFCNN
 from datasets.dataloader import get_dataloader
 from datasets.match3d import ThreeDMatchTestDataset
-from utils.selection import *
+from engine.detector import *
 
 
 paser = argparse.ArgumentParser()
 paser.add_argument("--keypoint_detector", type=str, default="rand", choices=["rand","prob","nms","nmsp"])
 paser.add_argument("--num_keypoints", type=int, default=5000)
-paser.add_argument("--model_path", type=str, default="./checkpoints/3dmatch_kpfcnn_HCL64_40000.pth")
+paser.add_argument("--model_path", type=str, default="./ckpt/3dmatch_kpfcnn_HCL64_40000.pth")
 args = paser.parse_args()
 
 

@@ -4,9 +4,9 @@
 import time
 import argparse
 import numpy as np
-from metrics import Metrics
+from engine.metrics import Metrics
 import torch
-from utils.selection import *
+from engine.detector import *
 from models.kpfcnn import KPFCNN
 from datasets.dataloader import get_dataloader
 from datasets.kitti import KITTIDataset
@@ -19,7 +19,7 @@ args = paser.parse_args()
 
 
 model = KPFCNN(1, 32, 64, 15, 0.9, 0.6, 'group_norm', 32)
-model.load_state_dict(torch.load('./checkpoints/kitti_HCL64_augm_23500.pth'))
+model.load_state_dict(torch.load('./ckpt/kitti_HCL64_augm_23500.pth'))
 model.eval().cuda()
 
 kitti = KITTIDataset('test')

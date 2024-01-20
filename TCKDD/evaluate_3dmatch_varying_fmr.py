@@ -1,12 +1,12 @@
 import time
 import argparse
-from metrics import Metrics
+from engine.metrics import Metrics
 import torch
 import numpy as np
 from models.kpfcnn import KPFCNN
 from datasets.dataloader import get_dataloader
 from datasets.match3d import ThreeDMatchTestDataset
-from utils.selection import *
+from engine.detector import *
 
 
 paser = argparse.ArgumentParser()
@@ -16,7 +16,7 @@ args = paser.parse_args()
 
 neighbor_limits = [37, 31, 34, 37, 35]
 model = KPFCNN(1, 32, 64, 15, 0.075, 0.06, 'group_norm', 32)
-model.load_state_dict(torch.load('./checkpoints/3dmatch_kpfcnn_HCL64_40000.pth'))
+model.load_state_dict(torch.load('./ckpt/3dmatch_kpfcnn_HCL64_40000.pth'))
 model.eval().cuda()
 
 indoor = ThreeDMatchTestDataset(False)

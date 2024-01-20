@@ -2,10 +2,11 @@ import time
 import argparse
 import numpy as np
 import open3d as o3d
-from metrics import Metrics
 import matplotlib.pyplot as plt
 import torch
-from utils.selection import *
+
+from engine.detector import *
+from engine.metrics import Metrics
 from models.kpfcnn import KPFCNN
 from datasets.match3d import ThreeDMatchTrainDataset
 from datasets.dataloader import collate_fn_precompute_data_stack_mode
@@ -15,7 +16,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument("--keypoint_detector", type=str, default="prob", choices=["rand","prob","nms","nmsp"])
 parser.add_argument("--num_keypoints", type=int, default=250)
 parser.add_argument("--sample_index", type=int, default=20)
-parser.add_argument("--model_path", type=str, default="./checkpoints/3dmatch_kpfcnn_HCL64_40000.pth")
+parser.add_argument("--model_path", type=str, default="./ckpt/3dmatch_kpfcnn_HCL64_40000.pth")
 args = parser.parse_args()
 
 
